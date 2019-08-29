@@ -1,0 +1,77 @@
+11,12c11,12
+<             if(g[v].val==(!g[g[v].in[0]].val&g[g[v].in[1]].val)){ 
+<                 g[g[v].in[0]].change=false;
+---
+>             if(g[v].val == (!g[g[v].in[0]].val) & g[g[v].in[1]].val){
+>                 g[g[v].in[0]].change = false;
+15c15
+<                 g[g[v].in[0]].change=true;
+---
+>                 g[g[v].in[0]].change = true;
+17,18c17,18
+<             if(g[v].val==(g[g[v].in[0]].val&!g[g[v].in[1]].val)){
+<                 g[g[v].in[1]].change=false;
+---
+>             if(g[v].val == (g[g[v].in[0]].val & !g[g[v].in[1]].val)){
+>                 g[g[v].in[1]].change = false;
+21c21
+<                 g[g[v].in[1]].change=true;
+---
+>                 g[g[v].in[1]].change = true;
+25,31c25,34
+<             if(g[v].val==(!g[g[v].in[0]].val|g[g[v].in[1]].val)) 
+<                 g[g[v].in[0]].change=false;
+<             else
+<                 g[g[v].in[0]].change=true;
+<             if(g[v].val==(g[g[v].in[0]].val|!g[g[v].in[1]].val)) 
+<                 g[g[v].in[1]].change=false;
+<             else
+---
+>             if(g[v].val == (!g[g[v].in[0]].val) | g[g[v].in[1]].val){
+>                 g[g[v].in[0]].change = false;
+>             }else{
+>                 g[g[v].in[0]].change = true;
+>             }
+>             if(g[v].val == (g[g[v].in[0]].val | !g[g[v].in[1]].val)){
+>                 g[g[v].in[1]].change = false;
+>             }else{
+>                 g[g[v].in[1]].change = true;
+>             }
+33d35
+<                 g[g[v].in[1]].change=true;
+35,42c37,46
+<             if(g[v].val==(!g[g[v].in[0]].val^g[g[v].in[1]].val)) 
+<                 g[g[v].in[0]].change=false;
+<             else
+<                 g[g[v].in[0]].change=true;
+<             if(g[v].val==(g[g[v].in[0]].val^!g[g[v].in[1]].val)) 
+<                 g[g[v].in[1]].change=false;
+<             else
+<                 g[g[v].in[1]].change=true;
+---
+>             if(g[v].val == (!g[g[v].in[0]].val) ^ g[g[v].in[1]].val){
+>                 g[g[v].in[0]].change = false;
+>             }else{
+>                 g[g[v].in[0]].change = true;
+>             }
+>             if(g[v].val == (g[g[v].in[0]].val ^ !g[g[v].in[1]].val)){
+>                 g[g[v].in[1]].change = false;
+>             }else{
+>                 g[g[v].in[1]].change = true;
+>             }
+45,48c49,53
+<             if(g[v].val==(!!g[g[v].in[0]].val)) /// equal to if(false)
+<                 g[g[v].in[0]].change=false;
+<             else
+<                 g[g[v].in[0]].change=true;
+---
+>             if(g[v].val == (!!g[g[v].in[0]].val)){
+>                 g[g[v].in[0]].change = false;
+>             }else{
+>                 g[g[v].in[0]].change = true;
+>             }
+51c56,57
+<     for(int i=0;i<g[v].in.size();i++)
+---
+>     
+>     for(int i = 0; i < g[v].in.size(); ++i)

@@ -1,0 +1,94 @@
+/*
+ ____________________________________________________________
+|                                                            |
+|                   Author: ay2306                           |
+|____________________________________________________________|
+
+*/
+#include <bits/stdc++.h>
+#define MOD 1000000007
+#define test int t; cin>>t; while(t--)
+#define init(arr,val) memset(arr,val,sizeof(arr))
+#define loop(i,a,b) for(int i=a;i<b;i++)
+#define loopr(i,a,b) for(int i=a;i>=b;i--)
+#define loops(i,a,b,step) for(int i=a;i<b;i+=step)
+#define looprs(i,a,b,step) for(int i=a;i>=b;i-=step)
+#define ull unsigned long long int
+#define ll long long int
+#define P pair
+#define PLL pair<long long, long long>
+#define PII pair<int, int>
+#define PUU pair<unsigned long long int, unsigned long long int>
+#define L list
+#define V vector
+#define D deque
+#define ST set
+#define MS multiset
+#define M map
+#define UM unordered_map
+#define mp make_pair
+#define pb push_back
+#define pf push_front
+#define MM multimap
+#define F first
+#define S second
+#define IT iterator
+#define RIT reverse_iterator
+#define FAST ios_base::sync_with_stdio(false);cin.tie();cout.tie();
+#define FILE_READ freopen("input.txt","r",stdin);freopen("output.txt","w",stdout);
+#define MAXN 25
+using namespace std;
+
+ll ab(ll a){
+    if(a < 0)a*=-1;
+    return a;
+}
+
+void solve(){
+    int n;
+    ll z1,z2;
+    cin >> n >> z1 >> z2;
+    ll *arr = new ll[n];
+    loop(i,0,n){ll a; cin >> a;arr[i]=ab(a);}
+    for(int i = 0; i < n; ++i){
+        if(arr[i] == ab(z1) || arr[i] == ab(z2)){
+            cout << "1\n";
+            return;
+        }
+    }
+    // if(z1 == 0 || z2 == 0){
+    //     cout << "2\n";
+    //     return 0;
+    // }
+
+    int flag;
+    for(int i = 0; i < n; ++i){
+        flag = 0;
+        ll a = arr[i];
+        for(int j = 0; j < n; ++j){
+            if((a-arr[j] == z1) || (a+arr[j] == z1) || (a-arr[j] == z2) || (a+arr[j] == z2)){
+                flag = 1;
+                break;
+            }
+        }
+        if(!flag)break;
+        flag = 0;
+        a = -arr[i];
+        for(int j = 0; j < n; ++j){
+            if((a-arr[j] == z1) || (a+arr[j] == z1) || (a-arr[j] == z2) || (a+arr[j] == z2)){
+                flag = 1;
+                break;
+            }
+        }
+        if(!flag)break;
+    }
+    if(flag)cout << "2\n";
+    else cout << "0\n";    
+}
+
+int main(){
+    int t = 1;
+    cin >> t;
+    while(t--)solve();
+    return 0;
+}
