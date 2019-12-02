@@ -8,7 +8,6 @@ void computeLPS(){
     lps[0] = 0;
     int i = 1;
     while(i < pattern.size()){
-        // printf("Working for character %c at i = %d, j = %d, lps[j] = %d\n",pattern[i],i,j,lps[j]);
         if(pattern[i] == pattern[j]){
             j++;
             lps[i] = j;
@@ -46,11 +45,19 @@ vector<int> kmp(){
     return ans;
 }
 int main(){
+    cout << "Enter text: ";
+    getline(cin,text);
+    cout << "Enter pattern: ";
     cin >> pattern;
-    cin >> text;
     kmp();
     vector<int> res = kmp();
-    // if(res.size() == 0)cout << "No"
-    cout << res.size();
+    if(res.size() == 0){
+        cout << "No patterns found in the text";
+    }else{
+        cout << "Patterns found in text at indices: ";
+        for(auto i: res){
+            cout << i << ", ";
+        }
+    }
     return 0;
 }

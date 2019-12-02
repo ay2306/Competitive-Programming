@@ -38,9 +38,8 @@ while i < 10:
     digits.append(str(i))
     i = i + 1
 fopen = open('input.txt','w')
-a = getNumber(1,1000)
-b = getNumber(a,2*a)
-writeNumber("1",fopen)
-writeNumber(a,fopen)
-writeNumber("1",fopen)
-writeNumber(b,fopen)
+t = getNumber(1,5)
+writeNumber(t,fopen)
+for i in range(t):
+    writeString(getString(smallLetters,getNumber(1,5)),fopen)
+    writeString(getString(smallLetters,getNumber(15,20)),fopen)

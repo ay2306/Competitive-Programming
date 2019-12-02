@@ -38,9 +38,15 @@
 #define FILE_READ freopen("input.txt","r",stdin);freopen("output.txt","w",stdout);
 #define MAXN 1001000
 using namespace std;
-struct node{
-    
-}
-int main(){
-    return 0;
-}
+
+const int N = 1000;
+const int C = 100;
+
+struct edge{
+    int a,b,w;
+    edge(){}
+    edge(int from, int to, int weight):a(from),b(to),w(weight){}
+    bool operator< (const edge &that){
+        return this->w > that.w;
+    }
+};

@@ -52,10 +52,10 @@ struct circle{
     bool inside(pair<double,double> a, bool print = false){
         double dis = (x-a.F)*(x-a.F) + (y-a.S)*(y-a.S);
         if(print){
-            printf("distance from c2 =  %.10f\n",sqrt(dis));
+            printf("distance from c2 =  %.40f\n",sqrt(dis));
         }
         dis = sqrt(dis);
-        if(dis - r > 1e-7){
+        if(fabs(dis - r) > 1e-7){
             return false;
         }
         return true;
@@ -83,7 +83,7 @@ void solve(){
     // cin >> c2.x >> c2.y >> c2.r;
     if(c1.x == c2.x && c1.y == c2.y){
         if(c1.r > c2.r){
-            printf("YES\n%.10f %.10f\n",c1.x+c1.r,c1.y);
+            printf("YES\n%.40f %.40f\n",c1.x+c1.r,c1.y);
         }else{
             printf("NO\n");
         }
@@ -91,9 +91,9 @@ void solve(){
     }
     if(c1.x == c2.x){
         if(!c2.inside(mp(c1.x-c1.r,c1.y))){
-            printf("YES\n%.10f %.10f\n",c1.x-c1.r,c1.y);
+            printf("YES\n%.40f %.40f\n",c1.x-c1.r,c1.y);
         }else if(!c2.inside(mp(c1.x+c1.r,c1.y))){
-            printf("YES\n%.10f %.10f\n",c1.x+c1.r,c1.y);
+            printf("YES\n%.40f %.40f\n",c1.x+c1.r,c1.y);
         }else{
             printf("NO\n");
         }
@@ -101,9 +101,9 @@ void solve(){
     }
     if(c1.y == c2.y){
         if(!c2.inside(mp(c1.x,c1.y-c1.r))){
-            printf("YES\n%.10f %.10f\n",c1.x,c1.y-c1.r);
+            printf("YES\n%.40f %.40f\n",c1.x,c1.y-c1.r);
         }else if(!c2.inside(mp(c1.x,c1.y+c1.r))){
-            printf("YES\n%.10f %.10f\n",c1.x,c1.y+c1.r);
+            printf("YES\n%.40f %.40f\n",c1.x,c1.y+c1.r);
         }else{
             printf("NO\n");
         }
@@ -141,9 +141,9 @@ void solve(){
         }
     }
     // c1.inside(mp(l,l1.y(l)),true);
-    // printf("CHECK: %.10f %.10f\n",l,l1.y(l));
+    // printf("CHECK: %.40f %.40f\n",l,l1.y(l));
     if(!c2.inside(mp(l,l1.y(l)))){
-        printf("YES\n%.10f %.10f\n",l,l1.y(l));
+        printf("YES\n%.40f %.40f\n",l,l1.y(l));
     }else{
         printf("NO\n");
     }

@@ -44,21 +44,24 @@ const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
 
-V<V<int>> adj;
-V<bool> vis;
-V<int> dfs_num;
-V<int> dfs_low;
+
+
+V<PII> adj[1000013];
+bool vis[1000013];
+int dfs_num[1000013];
+int dfs_low[1000013];
+bool bridges[1000013];
 int iter = 0;
 int n,m;
-set<pair<int,int>> bridge;
 void dfs(int s, int p = -1){
     dfs_num[s] = dfs_low[s] = iter++;
     vis[s] = true;
-    for(auto &i: adj[s]){
+    for(auto &o: adj[s]){
+        int i = o.second;
         if(i == p)continue;
         if(!vis[i]){
             dfs(i,s);
-            if(dfs_low[i] > dfs_num[s])bridge.insert(mp(min(i,s),max(i,s)));
+            if(dfs_low[i] > dfs_num[s])bridges[o.F] = true;
             dfs_low[s] = min(dfs_low[i],dfs_low[s]);
         }else{
             dfs_low[s] = min(dfs_low[i],dfs_low[s]);
@@ -67,23 +70,17 @@ void dfs(int s, int p = -1){
 }
 
 int main(){
-    cin >> n >> m;
     int q;
-    cin >> q;
-    adj = V<V<int>> (n);
-    dfs_low = V<int> (n,0);
-    dfs_num = V<int> (n,0);
-    vis = V<bool> (n,false);
-    map<int,PII> edge;
+    scanf("%d%d%d",&n,&m,&q);
     while(m--){
         int a,b;
         int id;
-        cin >> a >> b >> id;
+        // cin >> a >> b >> id;
+        scanf("%d%d",&a,&b);
         a--;
         b--;
-        edge[id] = (mp(min(a,b),max(a,b)));
-        adj[a].pb(b);
-        adj[b].pb(a);
+        adj[a].pb(mp(id-1,b));
+        adj[b].pb(mp(id-1,a));
     }
     for(int i = 0; i < n; ++i){
         if(!vis[i]){
@@ -92,11 +89,15 @@ int main(){
     }
     while(q--){
         int a;
-        cin >> a;
-        if(bridge.find(edge[a]) != bridge.end()){
-            cout << "YES\n";
+        // cin >> a;
+        scanf("%d",&a);
+        a--;
+        if(bridges[a]){
+            // cout << "YES\n";
+            printf("YES\n");
         }else{
-            cout << "no\n";
+            printf("no\n");
+            // cout << "no\n";
         }
     }
    return 0;
