@@ -51,8 +51,48 @@ const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
 
-void solve(){
+string printBinary(ll a){
+    string ans = "";
+    while(a){
+        if(a % 2)ans+="1";
+        else ans+="0";
+        a/=2;
+    }
+    reverse(all(ans));
+    return ans;
+}
 
+void vispres(ll l, ll r){
+    while(l <= r){
+        cout << l << " : " << printBinary(l) << "\n";
+        l++;
+    }
+}
+
+void solve(){
+    ll l,r,l1,r1;
+    cin >> l >> r;
+    ll ans = (r*(r+1))/2 - ((l*(l-1)))/2;
+    ll ct = 0;
+    ll ind = 0;
+    l1=l;
+    r1=r;
+    // vispres(l,r);
+    // printf("init = %lld\n",ans);
+    do{
+        ct = ((r >> ind) / 2) + ( (r >> ind) % 2) - (((l-1) >> ind) / 2) - (((l-1) >> ind) % 2);
+        ans-=ct*(1LL << ind);
+        // printf("ind = %lld, power = %lld, ct = %lld, sub = %lld, ans = %lld\n",ind,(1LL<<ind),ct,ct*(1LL<<ind),ans);
+        ind++;
+    }while((1LL << ind) < inf);
+    ind = 0;
+    while((1LL << ind) < inf){
+        ll val = (1LL << ind);
+        if(val >= l1 && val <= r1)ans--;
+        ind++;
+    }
+    ind = 0;
+    cout << ans << "\n";
 }
 
 int main(){

@@ -1,11 +1,3 @@
-/*
- ____________________________________________________________
-|                                                            |
-|                   Author: ay2306                           |
-|____________________________________________________________|
-
-*/
-
 #include <bits/stdc++.h>
 //For ordered_set
 #include <ext/pb_ds/assoc_container.hpp>
@@ -42,6 +34,7 @@
 #define FILE_READ_IN freopen("input.txt","r",stdin);
 #define FILE_READ_OUT freopen("output.txt","w",stdout);
 #define all(a) a.begin(),a.end()
+#define ld long double
 using namespace std;
 // For ordered_set
 using namespace __gnu_pbds;
@@ -50,16 +43,47 @@ using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_
 const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
-
-void solve(){
-
+V<V<int>> adj;
+V<int> parent;
+V<int> leaf;
+V<int> subTreeSum;
+V<int> subTreeEdges;
+long long int ans = LLONG_MAX;
+void dfs(int s = 0, int p = -1){
+    parent[s] = p;
+    int cnt = 0;
+    for(auto i: adj[s]){
+        if(i == p)continue;
+        dfs(i,s);
+        subTreeSum[s]+=subTreeSum[i];
+        subTreeEdges[s]+=(subTreeEdges[i]+1);
+    }
 }
-
 int main(){
-   int t = 0;
-   cin >> t;
-   while(t--){
-       solve();
-   }
+    FAST
+    map<PII,int> ed;
+    int n,m;
+    cin >> n >> m;
+    int to_del = n-1-m;
+    adj = V<V<int>> (n);
+    parent = V<int> (n,0);
+    leaf = V<int> (n,0);
+    subTreeSum = V<int> (n,0);
+    subTreeEdges = V<int> (n,0);
+    int ans =0 ;
+    loop(i,1,n){
+        int a,b;
+        cin >> a >> b;
+        int c;
+        cin >> c;
+        a--;
+        b--;
+        adj[a].pb(b);
+        adj[b].pb(a);
+        ed[{a,b}] = c;
+        ed[{b,a}] = c;
+        ans+=c;
+    }
+    cout << ans;
    return 0;
 }

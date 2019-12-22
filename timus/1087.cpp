@@ -1,11 +1,3 @@
-/*
- ____________________________________________________________
-|                                                            |
-|                   Author: ay2306                           |
-|____________________________________________________________|
-
-*/
-
 #include <bits/stdc++.h>
 //For ordered_set
 #include <ext/pb_ds/assoc_container.hpp>
@@ -42,6 +34,7 @@
 #define FILE_READ_IN freopen("input.txt","r",stdin);
 #define FILE_READ_OUT freopen("output.txt","w",stdout);
 #define all(a) a.begin(),a.end()
+#define ld long double
 using namespace std;
 // For ordered_set
 using namespace __gnu_pbds;
@@ -50,16 +43,21 @@ using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_
 const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
-
-void solve(){
-
-}
-
+int dp[10010];
+int coin[100];
 int main(){
-   int t = 0;
-   cin >> t;
-   while(t--){
-       solve();
-   }
+    int n,m;
+    cin >> n >> m;
+    loop(i,0,m)scanf("%d",coin+i);
+    dp[0] = 1;
+    loop(i,1,n+1){
+        loop(j,0,m){
+            if(coin[j] <= i && dp[i-coin[j]] == 0){
+                dp[i] = 1;
+                break;
+            }
+        }
+    }
+    cout << 2-dp[n];
    return 0;
 }

@@ -1,11 +1,3 @@
-/*
- ____________________________________________________________
-|                                                            |
-|                   Author: ay2306                           |
-|____________________________________________________________|
-
-*/
-
 #include <bits/stdc++.h>
 //For ordered_set
 #include <ext/pb_ds/assoc_container.hpp>
@@ -50,13 +42,61 @@ using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_
 const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
+const int MAX_BIT = 62;
+ll dp[63][2][2];
+ll dpr[63][2][2];
+int *num;
+ll count(int pos = 62, int state = 0, int bit = 0){
+    if(pos == -1){
+        return 1;
+    }
+    ll &res = dp[pos][state][bit];
+    if(dp[pos][state][bit] != -1)return res;
+    res = 0;
+    int limit = 1;
+    if(state == 0){
+        limit = num[pos];
+    }
+    for(int i = 0; i <= limit; ++i){
+        if(i == limit && state == 0)res+=count(pos-1,0,i);
+        else res+=count(pos-1,1,i);
+    }
+    return res;
+}
+int lnum[63];
+void setL(ll l){
+    ll ind = MAX_BIT;
+    while(ind >= 0){
+        lnum[ind] = ((l >> ind) & 1);
+        ind--;
+    }
+    num = lnum;
+}
+int rnum[63];
+void setR(ll l){
+    ll ind = MAX_BIT;
+    while(ind >= 0){
+        rnum[ind] = ((l >> ind) & 1);
+        ind--;
+    }
+    num = rnum;
+}
+
+
 
 void solve(){
-
+    ll ind = MAX_BIT;
+    ll l, r, k;
+    cin >> l >> r >> k;
+    ll ans = 0;
+    while(ind >= 0){
+        setL(l);
+        ll cnt
+    }
 }
 
 int main(){
-   int t = 0;
+   int t = 1;
    cin >> t;
    while(t--){
        solve();
