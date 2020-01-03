@@ -44,38 +44,17 @@ const ll inf = 1e9;
 const double pi = acos(-1);
 
 void solve(){
-    int n;
-    cin >> n ;
-    V<int> a(n+1,0),b(n+1,0);
-    unordered_map<int,int> m;
-    int left_diff = 0;
-    int right_diff = 0;
-    loop(i,0,n){
-        cin >> a[n-i-1];
-        if(a[n-1-i] == 2)a[n-1-i]=-1;
+    ll a;
+    cin >> a;
+    if(a % 14 >= 1 && a % 14 <= 6 && a > 7){
+        cout << "YES\n";
+    }else{
+        cout << "NO\n";
     }
-    loop(i,0,n){
-        cin >> b[i];
-        if(b[i] == 2)b[i] = -1;
-    }
-    m[0] = n;
-    loopr(i,n-1,0){
-        b[i]+=b[i+1];
-        a[i]+=a[i+1];
-        m[b[i]] = i;
-    }
-    int ans = 2*n;
-    loop(i,0,n+1){
-        if(m.find(-a[i]) != m.end()){
-            ans = min(ans,i+m[-a[i]]);
-        }
-    }
-    cout << ans << "\n";
 }
 
 int main(){
     FAST
-    // FILE_READ_IN
    int t = 0;
    cin >> t;
    while(t--){

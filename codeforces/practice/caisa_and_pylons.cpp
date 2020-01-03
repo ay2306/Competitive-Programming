@@ -34,6 +34,7 @@
 #define FILE_READ_IN freopen("input.txt","r",stdin);
 #define FILE_READ_OUT freopen("output.txt","w",stdout);
 #define all(a) a.begin(),a.end()
+#define ld long double
 using namespace std;
 // For ordered_set
 using namespace __gnu_pbds;
@@ -43,43 +44,30 @@ const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
 
-void solve(){
+int main(){
     int n;
-    cin >> n ;
-    V<int> a(n+1,0),b(n+1,0);
-    unordered_map<int,int> m;
-    int left_diff = 0;
-    int right_diff = 0;
-    loop(i,0,n){
-        cin >> a[n-i-1];
-        if(a[n-1-i] == 2)a[n-1-i]=-1;
-    }
-    loop(i,0,n){
-        cin >> b[i];
-        if(b[i] == 2)b[i] = -1;
-    }
-    m[0] = n;
-    loopr(i,n-1,0){
-        b[i]+=b[i+1];
-        a[i]+=a[i+1];
-        m[b[i]] = i;
-    }
-    int ans = 2*n;
-    loop(i,0,n+1){
-        if(m.find(-a[i]) != m.end()){
-            ans = min(ans,i+m[-a[i]]);
+    cin >> n;
+    V<ll> arr(n+1);
+    ll ans = inf+1;
+    ll low = 0;
+    ll high = inf;
+    loop(i,1,n+1)cin >> arr[i];
+    while(low <= high){
+        ll mid = low + high >> 1;
+        arr[0] = mid;
+        ll e = 0;
+        int i;
+        for(i = 1; i <= n; ++i){
+            e+=(arr[i-1] - arr[i]);
+            if(e < 0)break;
+        }
+        if(i > n){
+            ans=min(ans,mid);
+            high = mid-1;
+        }else{
+            low = mid+1;
         }
     }
-    cout << ans << "\n";
-}
-
-int main(){
-    FAST
-    // FILE_READ_IN
-   int t = 0;
-   cin >> t;
-   while(t--){
-       solve();
-   }
+    cout << ans;
    return 0;
 }

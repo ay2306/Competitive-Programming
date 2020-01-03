@@ -34,6 +34,7 @@
 #define FILE_READ_IN freopen("input.txt","r",stdin);
 #define FILE_READ_OUT freopen("output.txt","w",stdout);
 #define all(a) a.begin(),a.end()
+#define ld long double
 using namespace std;
 // For ordered_set
 using namespace __gnu_pbds;
@@ -43,43 +44,51 @@ const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
 
-void solve(){
-    int n;
-    cin >> n ;
-    V<int> a(n+1,0),b(n+1,0);
-    unordered_map<int,int> m;
-    int left_diff = 0;
-    int right_diff = 0;
-    loop(i,0,n){
-        cin >> a[n-i-1];
-        if(a[n-1-i] == 2)a[n-1-i]=-1;
+int main(){
+    int n,m,x,y;
+    cin >> n >> m >> x >> y;
+    V<string> a(n);
+    loop(i,0,n)cin >> a[i];
+    V<int> bc(m+1,0),wc(m+1,0);
+    V<V<ll>> dp(m+1,V<ll> (2,inf));
+    loop(j,0,m){
+        int w = 0;
+        loop(i,0,n)w+=(a[i][j]=='#');
+        wc[j+1] = n-w;
+        bc[j+1] = w;
+        // cout << wc[j+1] << " " << bc[j+1] << "\n";
     }
-    loop(i,0,n){
-        cin >> b[i];
-        if(b[i] == 2)b[i] = -1;
-    }
-    m[0] = n;
-    loopr(i,n-1,0){
-        b[i]+=b[i+1];
-        a[i]+=a[i+1];
-        m[b[i]] = i;
-    }
-    int ans = 2*n;
-    loop(i,0,n+1){
-        if(m.find(-a[i]) != m.end()){
-            ans = min(ans,i+m[-a[i]]);
+    dp[0][0] = 0;
+    dp[0][1] = 0;
+    loop(i,1,m+1){
+        // cout << dp[i][0] << " " << dp[i][1] << endl;
+        if(i < x){
+            continue;
+        }
+        ll cost;
+        // * If I convert this column black
+        cost = bc[i];
+        loop(j,1,x){
+            cost+=bc[i-j];
+        }
+        dp[i][0] = min(dp[i][0],cost+dp[i-x][1]);
+        loop(j,x,y){
+            if(i-j-1 < 0)break;
+            cost+=bc[i-j];
+            dp[i][0] = min(dp[i][0],cost+dp[i-j-1][1]);
+        }
+        // * If I convert this column white
+        cost = wc[i];
+        loop(j,1,x){
+            cost+=wc[i-j];
+        }
+        dp[i][1] = min(dp[i][1],cost+dp[i-x][0]);
+        loop(j,x,y){
+            if(i-j-1 < 0)break;
+            cost+=wc[i-j];
+            dp[i][1] = min(dp[i][1],cost + dp[i-j-1][0]);
         }
     }
-    cout << ans << "\n";
-}
-
-int main(){
-    FAST
-    // FILE_READ_IN
-   int t = 0;
-   cin >> t;
-   while(t--){
-       solve();
-   }
+    cout << min(dp[m][0],dp[m][1]);
    return 0;
 }

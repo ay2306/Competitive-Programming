@@ -34,6 +34,7 @@
 #define FILE_READ_IN freopen("input.txt","r",stdin);
 #define FILE_READ_OUT freopen("output.txt","w",stdout);
 #define all(a) a.begin(),a.end()
+#define ld long double
 using namespace std;
 // For ordered_set
 using namespace __gnu_pbds;
@@ -42,44 +43,39 @@ using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_
 const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
+const int N = 50010;
+const int K = 510;
+ll dp[N][K];
+V<int> adj[N];
+int n,k;
+ll ans = 0;
 
-void solve(){
-    int n;
-    cin >> n ;
-    V<int> a(n+1,0),b(n+1,0);
-    unordered_map<int,int> m;
-    int left_diff = 0;
-    int right_diff = 0;
-    loop(i,0,n){
-        cin >> a[n-i-1];
-        if(a[n-1-i] == 2)a[n-1-i]=-1;
-    }
-    loop(i,0,n){
-        cin >> b[i];
-        if(b[i] == 2)b[i] = -1;
-    }
-    m[0] = n;
-    loopr(i,n-1,0){
-        b[i]+=b[i+1];
-        a[i]+=a[i+1];
-        m[b[i]] = i;
-    }
-    int ans = 2*n;
-    loop(i,0,n+1){
-        if(m.find(-a[i]) != m.end()){
-            ans = min(ans,i+m[-a[i]]);
+void dfs(int s = 0, int p = -1){
+    dp[s][0] = 1;
+    for(auto i: adj[s]){
+        if(i == p)continue;
+        dfs(i,s);
+        for(int l = 0; l < k; ++l){
+            ans+=(dp[s][l]*dp[i][k-l-1]);
+        }
+        for(int l = 1; l <= k; ++l){
+            dp[s][l]+=dp[i][l-1];
         }
     }
-    cout << ans << "\n";
 }
 
 int main(){
     FAST
-    // FILE_READ_IN
-   int t = 0;
-   cin >> t;
-   while(t--){
-       solve();
-   }
+    cin >> n >> k;
+    loop(i,1,n){
+        int a,b;
+        cin >> a >> b;
+        a--;
+        b--;
+        adj[a].pb(b);
+        adj[b].pb(a);
+    }
+    dfs();
+    cout << ans;
    return 0;
 }

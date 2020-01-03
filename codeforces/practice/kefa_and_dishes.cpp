@@ -34,6 +34,7 @@
 #define FILE_READ_IN freopen("input.txt","r",stdin);
 #define FILE_READ_OUT freopen("output.txt","w",stdout);
 #define all(a) a.begin(),a.end()
+#define ld long double
 using namespace std;
 // For ordered_set
 using namespace __gnu_pbds;
@@ -42,44 +43,53 @@ using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_
 const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
-
-void solve(){
-    int n;
-    cin >> n ;
-    V<int> a(n+1,0),b(n+1,0);
-    unordered_map<int,int> m;
-    int left_diff = 0;
-    int right_diff = 0;
-    loop(i,0,n){
-        cin >> a[n-i-1];
-        if(a[n-1-i] == 2)a[n-1-i]=-1;
-    }
-    loop(i,0,n){
-        cin >> b[i];
-        if(b[i] == 2)b[i] = -1;
-    }
-    m[0] = n;
-    loopr(i,n-1,0){
-        b[i]+=b[i+1];
-        a[i]+=a[i+1];
-        m[b[i]] = i;
-    }
-    int ans = 2*n;
-    loop(i,0,n+1){
-        if(m.find(-a[i]) != m.end()){
-            ans = min(ans,i+m[-a[i]]);
-        }
-    }
-    cout << ans << "\n";
-}
+const int N = 20;
+ll dp[1 << N][N];
+ll adj[N][N];
+ll arr[N];
+int n,m,k;
 
 int main(){
     FAST
-    // FILE_READ_IN
-   int t = 0;
-   cin >> t;
-   while(t--){
-       solve();
-   }
+    // FILE_READ_OUT
+    cin >> n >> m >> k;
+    loop(i,0,n)cin >> arr[i];
+    loop(i,0,k){
+        int a,b;
+        cin >> a >> b;
+        a--;
+        b--;
+        cin >> adj[a][b];
+    }
+    for(int mask = 0; mask < (1LL << n)-1; ++mask){
+        for(int i = 0; i < n; ++i){
+            if(((mask >> i) & 1) == 0)continue;
+            for(int j = 0; j < n; ++j){
+                if(((mask >> j) & 1) == 1)continue;
+                dp[mask | (1 << j)][j] = max(dp[mask|(1<<j)][j],dp[mask][i]+adj[i][j]);
+            }
+        }
+    }
+    ll ans = 0;
+    for(int mask = 0; mask < (1LL << n); ++mask){
+        // int cnt = 0;
+        int cnt = __builtin_popcount(mask);
+        // loop(i,0,n)cnt+=(((mask >> i) & 1 ) > 0);
+        if(cnt != m)continue;
+        ll s = 0;
+        // cout << "binary = " << bitset<6>(mask).to_string() << "  mask = " << mask << "\n";
+        loop(i,0,n){
+            // printf("dp[%d][%d] = %lld\t",mask,i,dp[mask][i]);
+            s = max(dp[mask][i],s);
+        }
+        // printf("\n");
+        loop(i,0,n){
+            if((mask >> i) & 1){
+                s+=arr[i];
+            }
+        }
+        ans=max(ans,s);
+    }
+    cout << ans;
    return 0;
 }

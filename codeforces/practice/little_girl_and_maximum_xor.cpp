@@ -15,7 +15,6 @@
 #define PLL pair<long long, long long>
 #define PII pair<int, int>
 #define PUU pair<unsigned long long int, unsigned long long int>
-#define L list
 #define V vector
 #define D deque
 #define ST set
@@ -43,51 +42,89 @@ using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_
 const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
- 
+const int BIT = 62;
+V<int> L,R;
+ll dp[70][2][2][2][2];
+// * l1 -> 1 means a is strictly greater then L
+// * r1 -> 1 means a is strictly less then R
+// * l2 -> 1 means b is strictly greater then L
+// * r2 -> 1 means b is strictly less then R
+ll f(int p = 0, int l1 = 0, int r1 = 0, int l2 = 0, int r2 = 0){
+    if(p == int(L.size()))return 0;
+    ll &res = dp[p][l1][r1][l2][r2];
+    if(res != -1)return res;
+    int mn1 = 0, mn2 = 0 ,mx1 = 1, mx2 = 1;
+    // * l1 = 0 and L[p] = 1 means that a is less than or equal(not possible) to L and this bit is 1, so we cannot place 0 here.
+    if(l1 == 0 && L[p] == 1){
+        mn1 = 1;
+    }
+    // * if a is greater than or equal R and R[p] = 0, then putting 1 here will also increase a to higher value of R
+    if(r1 == 0 && R[p] == 0){
+        mx1 = 0;
+    }
+    // * l2 = 0 and L[p] = 1 means that b is less than or equal(not possible) to L and this bit is 1, so we cannot place 0 here.
+    if(l2 == 0 && L[p] == 1){
+        mn2 = 1;
+    }
+    // * if b is greater than or equal R and R[p] = 0, then putting 1 here will also increase b to higher value of R
+    if(r2 == 0 && R[p] == 0){
+        mx2 = 0;
+    }
+    res = 0;
+    loop(i,mn1,mx1+1){
+        loop(j,mn2,mx2+1){
+            int v = (i^j);
+            ll toadd = 0;
+            if(v == 1){
+                toadd+=(1LL << (int(L.size())-p-1));
+            }
+            int nl1 = l1;
+            int nl2 = l2;
+            int nr1 = r1;
+            int nr2 = r2;
+            if(i > L[p]){
+                // * This means that l1 will become greater than L
+                nl1 = 1;
+            }
+            if(i < R[p]){
+                // * This means that r1 will become less than R
+                nr1 = 1;
+            }
+            if(j > L[p]){
+                // * This means that l2 will become greater than L
+                nl2 = 1;
+            }
+            if(j < R[p]){
+                // * This means that r2 will become less than R
+                nr2 = 1;
+            }
+            res = max(res,toadd+f(p+1,nl1,nr1,nl2,nr2));
+        }
+    }
+    return res;
+}
+
 int main(){
-    ull l,r;
+    ll l,r,temp;
     cin >> l >> r;
-    ull a = 0;
-    ull b = 0;
-    ull ans = 0;
-    int N = 63;
-    while(N >= 0){
-         if((a | (1LL << N)) <= r && (b | ((1LL << N)-1)) >= l){
-            a|=(1LL << N);
-            ans|=(1LL << N);
-        }else if((b | (1LL << N)) <= r  && (a | ((1LL << N)-1)) >= l){
-            b|=(1LL << N);
-            ans|=(1LL << N);
-        }else{
-            if((b | ((1LL << N)-1)) < l){
-                b = (b | ((1LL << N)-1)) ;
-            }
-            if((a | ((1LL << N)-1)) < l){
-                a = (a | ((1LL << N)-1)) ;
-            }
-        }
-        N--;
+    std::memset(dp,-1LL,sizeof(dp));
+    temp = l;
+    // if(l == r){
+    //     cout << 0;
+    //     return 0;
+    // }
+    while(temp){
+        L.pb((temp&1));
+        temp>>=1;
     }
-    if(a < b)swap(a,b);
-    while(a <= l && N > 0){
-        N = 62;
-        ll val = (a | (1LL << N));
-        if(val <= r){
-            a = val;
-        }
-        N--;
-        if(a >= l)break;
+    temp = r;
+    while(temp){
+        R.pb((temp&1));
+        temp>>=1;
     }
-    while(b <= l && N > 0){
-        N = 62;
-        ll val = (b | (1LL << N));
-        if(val <= r){
-            b = val;
-        }
-        N--;
-        if(a >= l)break;
-    }
-    if(a > r || a < l || b > r || b < l)cout << a << " " << b;
-    else cout << (a^b) ;
+    reverse(all(R));
+    while(int(L.size()) < int(R.size()))L.pb(0);
+    reverse(all(L));
+    cout << f();
    return 0;
 }

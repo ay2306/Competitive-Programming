@@ -34,6 +34,7 @@
 #define FILE_READ_IN freopen("input.txt","r",stdin);
 #define FILE_READ_OUT freopen("output.txt","w",stdout);
 #define all(a) a.begin(),a.end()
+#define ld long double
 using namespace std;
 // For ordered_set
 using namespace __gnu_pbds;
@@ -43,43 +44,43 @@ const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
 
-void solve(){
-    int n;
-    cin >> n ;
-    V<int> a(n+1,0),b(n+1,0);
-    unordered_map<int,int> m;
-    int left_diff = 0;
-    int right_diff = 0;
-    loop(i,0,n){
-        cin >> a[n-i-1];
-        if(a[n-1-i] == 2)a[n-1-i]=-1;
-    }
-    loop(i,0,n){
-        cin >> b[i];
-        if(b[i] == 2)b[i] = -1;
-    }
-    m[0] = n;
-    loopr(i,n-1,0){
-        b[i]+=b[i+1];
-        a[i]+=a[i+1];
-        m[b[i]] = i;
-    }
-    int ans = 2*n;
-    loop(i,0,n+1){
-        if(m.find(-a[i]) != m.end()){
-            ans = min(ans,i+m[-a[i]]);
-        }
-    }
-    cout << ans << "\n";
-}
-
 int main(){
     FAST
-    // FILE_READ_IN
-   int t = 0;
-   cin >> t;
-   while(t--){
-       solve();
-   }
+    int n,m;
+    cin >> n >> m;
+    V<int> a(n),ind(n+1);
+    V<PII> arr(m+1,mp(-1,-1));
+    loop(i,0,n){
+        cin >> a[i];
+        ind[a[i]] = i;
+    }
+    multiset<int> st,en;
+    unordered_map<int,list<int>> indices;
+    loop(i,0,m){
+        int a,b;
+        cin >> a >> b;
+        a = ind[a];
+        b = ind[b];
+        if(a > b)swap(a,b);
+        st.insert(a);
+        en.insert(b);
+        indices[a].push_back(b);
+    }
+    en.insert(n);
+    ll ans = 0;
+    loop(i,0,n){
+        int a = i;
+        auto it = *en.begin();
+        int b = it-1;
+        ans+=(b-a+1);
+        // printf("index = %d, starting = %d, ending = %d, count = %d, ans = %lld\n",i,a,b,b-a+1,ans);
+        if(st.find(a) != st.end()){
+            for(auto j: indices[a]){
+                auto k = en.find(j);
+                en.erase(k);
+            }
+        }
+    }
+    cout << ans;
    return 0;
 }

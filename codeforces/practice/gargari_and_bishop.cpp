@@ -34,6 +34,7 @@
 #define FILE_READ_IN freopen("input.txt","r",stdin);
 #define FILE_READ_OUT freopen("output.txt","w",stdout);
 #define all(a) a.begin(),a.end()
+#define ld long double
 using namespace std;
 // For ordered_set
 using namespace __gnu_pbds;
@@ -42,44 +43,36 @@ using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_
 const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
-
-void solve(){
-    int n;
-    cin >> n ;
-    V<int> a(n+1,0),b(n+1,0);
-    unordered_map<int,int> m;
-    int left_diff = 0;
-    int right_diff = 0;
-    loop(i,0,n){
-        cin >> a[n-i-1];
-        if(a[n-1-i] == 2)a[n-1-i]=-1;
-    }
-    loop(i,0,n){
-        cin >> b[i];
-        if(b[i] == 2)b[i] = -1;
-    }
-    m[0] = n;
-    loopr(i,n-1,0){
-        b[i]+=b[i+1];
-        a[i]+=a[i+1];
-        m[b[i]] = i;
-    }
-    int ans = 2*n;
-    loop(i,0,n+1){
-        if(m.find(-a[i]) != m.end()){
-            ans = min(ans,i+m[-a[i]]);
-        }
-    }
-    cout << ans << "\n";
-}
-
+const int N = 2020;
+ll arr[N][N];
+unordered_map<int,ll> r,l;
 int main(){
     FAST
-    // FILE_READ_IN
-   int t = 0;
-   cin >> t;
-   while(t--){
-       solve();
-   }
+    int n;
+    ll even = 0;
+    ll odd = 0;
+    cin >> n;
+    loop(i,0,n){
+        loop(j,0,n){
+            cin >> arr[i][j];
+            r[i+j]+=arr[i][j];
+            l[i-j]+=arr[i][j];
+        }
+    }
+    PII a = {1,1},b = {1,2};
+    loop(i,0,n){
+        loop(j,0,n){
+            ll s = l[i-j]+r[i+j]-arr[i][j];
+            if(((i+j)&1) && s > odd){
+                odd = s;
+                a = {i+1,j+1};
+            }
+            else if(((i+j)&1) == 0 && s > even){
+                even = s;
+                b = {i+1,j+1};
+            }
+        }
+    }
+    cout << odd+even << "\n" << a.F << " " << a.S << " " << b.F << " " << b.S;
    return 0;
 }
