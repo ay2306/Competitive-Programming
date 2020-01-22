@@ -61,7 +61,6 @@ double dis(const pt &a, const pt &b){
 
 double brute(int l, int r){
     double mn = inf;
-    // printf("(%d ==== %d)\n",l,r);
     for(int i = l; i <= r; ++i){
         for(int j = i+1; j <=r; ++j){
             double dist = dis(points[i],points[j]);
@@ -80,22 +79,13 @@ double brute(int l, int r){
 
 double findClose(vector<pt> a, int k, double d){
     sort(a.begin(),a.end(),cmp_y);
-//     printf("pot = ");
-//    for(auto i: a){
-//        printf("(%lld , %lld) ", i.x, i.y);
-//    }
     double mn;
     mn = d;
-    // printf("\nmn = %.6f\n",mn);
     k = a.size();
     for(int i = 0; i < k; ++i){
-        // printf("i = %d, point = (%lld, %lld)\n",i,a[i].x,a[i].y);
         for(int j = i+1; j < k && abs(a[j].y - a[i].y) < mn; ++j){
             double dist = dis(a[i],a[j]);
-            // printf("j = %d, point = (%lld, %lld), dist = %.6f\n",j,a[j].x,a[j].y,dist);
-            if(abs(a[j].y - a[i].y) >= mn){
-                // printf("EXITING for j = %d\n",j);
-                break;}
+            if(abs(a[j].y - a[i].y) >= mn)break;
             if(mn > dist){
                 mn = dist;
                 if(mn < bestmin){

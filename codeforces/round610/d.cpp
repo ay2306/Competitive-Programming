@@ -1,11 +1,7 @@
-/*
- ____________________________________________________________
-|                                                            |
-|                   Author: ay2306                           |
-|____________________________________________________________|
-
-*/
 #include <bits/stdc++.h>
+//For ordered_set
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
 #define MOD 1000000007
 #define test int t; cin>>t; while(t--)
 #define init(arr,val) memset(arr,val,sizeof(arr))
@@ -37,41 +33,64 @@
 #define FAST ios_base::sync_with_stdio(false);cin.tie();cout.tie();
 #define FILE_READ_IN freopen("input.txt","r",stdin);
 #define FILE_READ_OUT freopen("output.txt","w",stdout);
+#define all(a) a.begin(),a.end()
+#define ld long double
 using namespace std;
-
+// For ordered_set
+using namespace __gnu_pbds;
+template <typename T>
+using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
 const ll maxn = 1e5;
-ll a,b;
+const ll inf = 1e9;
+const double pi = acos(-1);
+
+
+void disp(string a){
+   cout << a << "\n";
+   fflush(stdout);
+}
 
 int main(){
-    cin >> a >> b;
-    ll op = abs(b-a);
-    ll val = a/__gcd(a,b);
-    val*=b;
-    ll ans = 0;
-    for(ll q = 1; q*q <= op; ++q){
-        if(op%q)continue;
-        ll f;
-        f = q;
-        if(a%f != 0){
-            ll k = f-(a%f);
-            ll v = (a+k)/__gcd(a+k,b+k);
-            v*=(b+k);
-            if(v < val){
-                val = v;
-                ans = k;
-            }
-        }
-        f = op/q;
-        if(a%f != 0){
-            ll k = f-(a%f);
-            ll v = (a+k)/__gcd(a+k,b+k);
-            v*=(b+k);
-            if(v < val){
-                val = v;
-                ans = k;
-            }
-        }
-    }
-    cout << ans;
-  return 0;
+   string ans = "a";
+   disp("a");
+   int err;
+   cin >> err;
+   disp("b");
+   int err1;
+   cin >> err1;
+   if(err == 0 || err1 == 0){
+      exit(0);
+   }
+   int n;
+   if(err1 == err){
+      n = err + 1;
+
+   }else {
+      n = max(err,err1);
+   }
+   loop(i,0,n){
+      ans+="a";
+   }
+   disp(ans);
+   cin >> err;
+   loop(i,0,n-1){
+      ans[i]='b';
+      disp(ans);
+      cin >> err1;
+      if(err1 == 0){
+         exit(0);
+      }
+      if(err == err1+1){
+         ans[i] = 'a';
+      }else{
+         err = err1;
+      }
+   }
+   if(err){
+      ans[n-1] = 'b';
+   }
+   disp(ans);
+   cin >> err;
+   exit(0);
+   return 0;
 }

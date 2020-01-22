@@ -1,11 +1,7 @@
-/*
- ____________________________________________________________
-|                                                            |
-|                   Author: ay2306                           |
-|____________________________________________________________|
-
-*/
 #include <bits/stdc++.h>
+//For ordered_set
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
 #define MOD 1000000007
 #define test int t; cin>>t; while(t--)
 #define init(arr,val) memset(arr,val,sizeof(arr))
@@ -37,41 +33,50 @@
 #define FAST ios_base::sync_with_stdio(false);cin.tie();cout.tie();
 #define FILE_READ_IN freopen("input.txt","r",stdin);
 #define FILE_READ_OUT freopen("output.txt","w",stdout);
+#define all(a) a.begin(),a.end()
+#define ld long double
 using namespace std;
-
+// For ordered_set
+using namespace __gnu_pbds;
+template <typename T>
+using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
 const ll maxn = 1e5;
-ll a,b;
+const ll inf = 1e9;
+const double pi = acos(-1);
 
 int main(){
-    cin >> a >> b;
-    ll op = abs(b-a);
-    ll val = a/__gcd(a,b);
-    val*=b;
+    unordered_map<ll,V<int>> m;
+    int n;
+    cin >> n;
+    V<ll> b(n);
+    ll a;
+    ll mask = 0;
+    loop(i,0,n){
+        cin >> a;
+        m[a].pb(i);
+    }
+    loop(i,0,n){
+        cin >> b[i];
+    }
     ll ans = 0;
-    for(ll q = 1; q*q <= op; ++q){
-        if(op%q)continue;
-        ll f;
-        f = q;
-        if(a%f != 0){
-            ll k = f-(a%f);
-            ll v = (a+k)/__gcd(a+k,b+k);
-            v*=(b+k);
-            if(v < val){
-                val = v;
-                ans = k;
-            }
-        }
-        f = op/q;
-        if(a%f != 0){
-            ll k = f-(a%f);
-            ll v = (a+k)/__gcd(a+k,b+k);
-            v*=(b+k);
-            if(v < val){
-                val = v;
-                ans = k;
-            }
+    if(n == 1){
+        cout << 0;
+        return 0;
+    }
+    int mx = 0;
+    V<ll> inc;
+    for(auto i: m){
+        if(i.S.size() > 1){
+            for(auto j:i.S)ans+=b[j];
+            inc.pb(i.F);
         }
     }
-    cout << ans;
-  return 0;
+    for(auto i: m){
+        if(i.S.size() > 1)continue;
+        for(auto j: inc){
+            if((j|i.F) == j){ans+=b[i.S.back()];break;}
+        }
+    }
+    cout << ans << "\n";
+   return 0;
 }

@@ -1,11 +1,7 @@
-/*
- ____________________________________________________________
-|                                                            |
-|                   Author: ay2306                           |
-|____________________________________________________________|
-
-*/
 #include <bits/stdc++.h>
+//For ordered_set
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
 #define MOD 1000000007
 #define test int t; cin>>t; while(t--)
 #define init(arr,val) memset(arr,val,sizeof(arr))
@@ -37,41 +33,49 @@
 #define FAST ios_base::sync_with_stdio(false);cin.tie();cout.tie();
 #define FILE_READ_IN freopen("input.txt","r",stdin);
 #define FILE_READ_OUT freopen("output.txt","w",stdout);
+#define all(a) a.begin(),a.end()
+#define ld long double
 using namespace std;
-
+// For ordered_set
+using namespace __gnu_pbds;
+template <typename T>
+using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
 const ll maxn = 1e5;
-ll a,b;
+const ll inf = 1e9;
+const double pi = acos(-1);
 
 int main(){
-    cin >> a >> b;
-    ll op = abs(b-a);
-    ll val = a/__gcd(a,b);
-    val*=b;
-    ll ans = 0;
-    for(ll q = 1; q*q <= op; ++q){
-        if(op%q)continue;
-        ll f;
-        f = q;
-        if(a%f != 0){
-            ll k = f-(a%f);
-            ll v = (a+k)/__gcd(a+k,b+k);
-            v*=(b+k);
-            if(v < val){
-                val = v;
-                ans = k;
-            }
-        }
-        f = op/q;
-        if(a%f != 0){
-            ll k = f-(a%f);
-            ll v = (a+k)/__gcd(a+k,b+k);
-            v*=(b+k);
-            if(v < val){
-                val = v;
-                ans = k;
-            }
-        }
-    }
-    cout << ans;
-  return 0;
+   int n;
+   string a1 = "sjfnb";
+   string a2 = "cslnb";
+   cin >> n;
+   V<int> a(n);
+   loop(i,0,n)cin >> a[i];
+   sort(all(a));
+   if(n == 1){
+       if(a[0]&1)cout << a1;
+       else cout << a2;
+       return 0;
+   }
+   ll cnt = 0;
+   loop(i,0,n-1){
+       if(a[i] == a[i+1]){
+           if(cnt == 1 || a[i] == 0){
+               cout << a2 ;
+               return 0;
+           }
+           if(i-1 >= 0 && a[i-1]+1 == a[i]){
+               cout << a2 ;
+               return 0;
+           }
+           a[i]--;
+           cnt++;
+       }
+   }
+   loop(i,0,n){
+       cnt+=(a[i]-i);
+   }
+   if(cnt&1)cout << a1;
+   else cout << a2;
+   return 0;
 }

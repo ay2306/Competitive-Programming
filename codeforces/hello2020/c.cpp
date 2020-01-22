@@ -9,8 +9,8 @@
 #define loopr(i,a,b) for(int i=a;i>=b;i--)
 #define loops(i,a,b,step) for(int i=a;i<b;i+=step)
 #define looprs(i,a,b,step) for(int i=a;i>=b;i-=step)
-#define ll long long int
 #define ull unsigned long long int
+#define ll long long int
 #define P pair
 #define PLL pair<long long, long long>
 #define PII pair<int, int>
@@ -42,78 +42,32 @@ using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_
 const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
-const int MAX_BIT = 62;
-ll l, r, k;
-
-struct hash_pair{
-    template<class T1,class T2>
-    size_t operator()(const pair<T1,T2>& p)const{
-        auto hash1 = hash<T1>{}(p.first);
-        auto hash2 = hash<T1>{}(p.second);
-        return hash1^hash2;
-    }
-};
-
-unordered_map<PLL,ll, hash_pair> dp;
-ll msb( ll a){
-    ll cnt = 0;
-    while(a > 0){
-        cnt++;
-        a/=2;
-    }
-    return cnt-1;
-}
-
-ll cnt(ll r, ll x){
-    // * Supermax check
-    if(x > r)return 0;
-    ll ans = 0;
-    bool o = false;
-    loopr(i,59,0){
-        if(((r >> i) & 1) == 1 && ((x >> i) & 1) == 0 && !o){
-            ans+=(1LL << i);
-        }else if(((x >> i) & 1) == 1){
-            ans>>=1;
-            if(((r >> 1) & 1) == 0) o = true;
-        }
-    }
-    return ans + ((x & r) == x);
-}
-
+const ll N = 3e5;
+ll f[N];
 void solve(){
-    ll ind = MAX_BIT;
-    scanf("%lld %lld %lld",&l,&r,&k);
-    ll MX = 0, Cnt = 0;
-	ll pr = 0, pl = 0;
-	bool tr = 1, tl = 1;
-	for (int i = 59; ~ i; i --)
-	{
-		Cnt = (pr >> 1) - (pl >> 1);
-		if (tr & ((r>>i)&1))
-			Cnt += (r & ((1LL << i) - 1)) + 1;
-		if (tl & ((l>>i)&1))
-			Cnt -= (l & ((1LL << i) - 1)) + 1;
-		if (Cnt >= k)
-		{
-			MX |= 1LL << i;
-			pl >>= 1; tl &= ((l >> i) & 1);
-			pr >>= 1; tr &= ((r >> i) & 1);
-		}
-		else
-		{
-			pl |= (tl & ((l >> i) & 1)) << i;
-			pr |= (tr & ((r >> i) & 1)) << i;
-		}
-	}
-    printf("%lld\n",MX);
+   ll n, mod;
+   cin >> n >> mod;
+   ll ans =0 ;
+   f[1]=1;
+   loop(i,2,N){
+      f[i] = f[i-1]*i;
+      f[i]%=mod;
+   }
+   loop(l,1,n+1){
+      ll k = f[l]*f[n-l+1];
+      k%=mod;
+      k*=(n-l+1);
+      k%=mod;
+      ans+=k;
+   }
+   cout << ans%mod;
 }
 
 int main(){
-   int t = 0;
-    scanf("%d",&t);
+   int t = 1;
+//    cin >> t;
    while(t--){
        solve();
    }
-//    cout << cnt(9,4) << "\n";
    return 0;
 }

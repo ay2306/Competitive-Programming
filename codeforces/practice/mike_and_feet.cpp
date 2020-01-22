@@ -40,13 +40,81 @@
 using namespace std;
 
 const ll maxn = 1e5;
+V<int> tree;
+V<int> lazy;
+int n;
+
+void update(int l, int r, int val, int node = 0, int start = 0, int end = n){
+    if(lazy[node]){
+        tree[node] = max(lazy[node],tree[node]);
+        if(start != end){
+            lazy[(node << 1)+1]=max(lazy[node],lazy[(node << 1)+1]);
+            lazy[(node << 1)+2]=max(lazy[node],lazy[(node << 1)+2]);
+        }
+    }
+    if(l > end || r < start )return;
+    if(l <= start && end <= r){
+        tree[node] = max(val,tree[node]);
+        if(start != end){
+            lazy[(node << 1)+1]=max(val,lazy[(node << 1)+1]);
+            lazy[(node << 1)+2]=max(val,lazy[(node << 1)+2]);
+        }
+        return;
+    }
+    update(l,r,val,node*2+1,start,(start+end)/2);
+    update(l,r,val,node*2+2,(start+end)/2+1,end);
+}
+
+int query(int l, int r, int node = 0, int start = 0, int end = n){
+    if(lazy[node]){
+        tree[node] = max(lazy[node],tree[node]);
+        if(start != end){
+            lazy[(node << 1)+1]=max(lazy[node],lazy[(node << 1)+1]);
+            lazy[(node << 1)+2]=max(lazy[node],lazy[(node << 1)+2]);
+        }
+    }
+    if(l > end || r < start )return 0;
+    if(l <= start && end <= r){
+        return tree[node];
+    }
+    int p1 = query(l,r,node*2+1,start,(start+end)/2);
+    int p2 = query(l,r,node*2+2,(start+end)/2+1,end);
+    return max(p1,p2);
+}
 
 int main(){
-    int n;
     cin >> n;
     V<int> arr(n);
     loop(i,0,n)cin >> arr[i];
-    sort(arr.begin(),arr.end(),greater<int>());
-    loop(i,0,n)cout << arr[i] << " ";
+    V<int> lower(n,-1);
+    V<int> lower1(n,-1);
+    stack<int> s;
+    tree = V<int> (4*n+4,0);
+    lazy = V<int> (4*n+4,0);
+    loop(i,0,n){
+        while(s.size() && arr[s.top()] > arr[i]){
+            lower[s.top()] = i;
+            s.pop();
+        }
+        s.push(i);
+    }
+    while(s.size())s.pop();
+    loopr(i,n-1,0){
+        while(s.size() && arr[s.top()] > arr[i]){
+            lower1[s.top()] = i;
+            s.pop();
+        }
+        s.push(i);
+    }
+    loop(i,0,n){
+        int l = 0;
+        if(lower[i] == -1)l=n-i;
+        else l = lower[i]-i;
+        l+=(i-lower1[i]);
+        l--;
+        // printf("i = %d, arr[i] = %d, lower[i] = %d, lower1[i] = %d, l = %d\n",i,arr[i],lower[i],lower1[i],l);
+        update(1,l,arr[i]);
+    }
+    loop(i,1,n+1)cout << query(i,i) << " ";
     return 0;
 }

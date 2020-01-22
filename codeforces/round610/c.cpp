@@ -9,8 +9,8 @@
 #define loopr(i,a,b) for(int i=a;i>=b;i--)
 #define loops(i,a,b,step) for(int i=a;i<b;i+=step)
 #define looprs(i,a,b,step) for(int i=a;i>=b;i-=step)
-#define ll long long int
 #define ull unsigned long long int
+#define ll long long int
 #define P pair
 #define PLL pair<long long, long long>
 #define PII pair<int, int>
@@ -42,78 +42,66 @@ using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_
 const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
-const int MAX_BIT = 62;
-ll l, r, k;
 
-struct hash_pair{
-    template<class T1,class T2>
-    size_t operator()(const pair<T1,T2>& p)const{
-        auto hash1 = hash<T1>{}(p.first);
-        auto hash2 = hash<T1>{}(p.second);
-        return hash1^hash2;
-    }
+struct prob{
+   ll m;
+   ll pref;
+   ll ti;
+   prob(ll a, ll b, ll c):m(a),pref(b),ti(c){}
 };
 
-unordered_map<PLL,ll, hash_pair> dp;
-ll msb( ll a){
-    ll cnt = 0;
-    while(a > 0){
-        cnt++;
-        a/=2;
-    }
-    return cnt-1;
-}
-
-ll cnt(ll r, ll x){
-    // * Supermax check
-    if(x > r)return 0;
-    ll ans = 0;
-    bool o = false;
-    loopr(i,59,0){
-        if(((r >> i) & 1) == 1 && ((x >> i) & 1) == 0 && !o){
-            ans+=(1LL << i);
-        }else if(((x >> i) & 1) == 1){
-            ans>>=1;
-            if(((r >> 1) & 1) == 0) o = true;
-        }
-    }
-    return ans + ((x & r) == x);
-}
-
 void solve(){
-    ll ind = MAX_BIT;
-    scanf("%lld %lld %lld",&l,&r,&k);
-    ll MX = 0, Cnt = 0;
-	ll pr = 0, pl = 0;
-	bool tr = 1, tl = 1;
-	for (int i = 59; ~ i; i --)
-	{
-		Cnt = (pr >> 1) - (pl >> 1);
-		if (tr & ((r>>i)&1))
-			Cnt += (r & ((1LL << i) - 1)) + 1;
-		if (tl & ((l>>i)&1))
-			Cnt -= (l & ((1LL << i) - 1)) + 1;
-		if (Cnt >= k)
-		{
-			MX |= 1LL << i;
-			pl >>= 1; tl &= ((l >> i) & 1);
-			pr >>= 1; tr &= ((r >> i) & 1);
-		}
-		else
-		{
-			pl |= (tl & ((l >> i) & 1)) << i;
-			pr |= (tr & ((r >> i) & 1)) << i;
-		}
-	}
-    printf("%lld\n",MX);
+   ll n,ti,a,b;
+   cin >> n >> ti >> a >> b;
+   unordered_map<int,bool> m;
+   V<prob> arr;
+   ll ans = 0, easy = 0, hard = 0, mand_easy = 0, mand_hard = 0;
+   loop(i,0,n){
+      int k;
+      cin >> k;
+      if(k == 0){
+         arr.pb(prob(a,a,a));
+         easy++;
+      }else{
+         hard++;
+         arr.pb(prob(b,b,b));
+      }
+   }
+   loop(i,0,n){
+      cin >> arr[i].ti;
+   }
+   sort(all(arr),[](prob &a,prob &b)->bool{
+      return a.ti < b.ti;
+   });
+   if(easy * a + hard*b <= ti){
+      cout << easy+hard << "\n";
+      return;
+   }
+   loop(i,0,n){
+      ll pos = 0;
+      ll t = arr[i].ti-1;
+      if(mand_hard * b + mand_easy*a <= t){
+         pos = mand_easy + mand_hard;
+         t-=(a*mand_easy);
+         t-=(b*mand_hard);
+         ll e = min(t/a,easy-mand_easy);
+         t-=(a*e);
+         ll h = min(t/b,hard-mand_hard);
+         ans = max(ans,pos+e+h);
+         // printf("t = %lld, mhard = %lld, measy = %lld, e = %lld, h = %lld, ans = %lld\n",arr[i].ti-1,mand_hard,mand_easy,e,h,ans);
+      }
+      if(arr[i].m == a)mand_easy++;
+      else mand_hard++;
+   }
+   cout << ans << "\n";
 }
 
 int main(){
+   FAST
    int t = 0;
-    scanf("%d",&t);
+   cin >> t;
    while(t--){
        solve();
    }
-//    cout << cnt(9,4) << "\n";
    return 0;
 }

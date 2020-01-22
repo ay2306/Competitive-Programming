@@ -1,11 +1,7 @@
-/*
- ____________________________________________________________
-|                                                            |
-|                   Author: ay2306                           |
-|____________________________________________________________|
-
-*/
 #include <bits/stdc++.h>
+//For ordered_set
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
 #define MOD 1000000007
 #define test int t; cin>>t; while(t--)
 #define init(arr,val) memset(arr,val,sizeof(arr))
@@ -37,41 +33,35 @@
 #define FAST ios_base::sync_with_stdio(false);cin.tie();cout.tie();
 #define FILE_READ_IN freopen("input.txt","r",stdin);
 #define FILE_READ_OUT freopen("output.txt","w",stdout);
+#define all(a) a.begin(),a.end()
+#define ld long double
 using namespace std;
-
+// For ordered_set
+using namespace __gnu_pbds;
+template <typename T>
+using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
 const ll maxn = 1e5;
-ll a,b;
-
+const ll inf = 1e9;
+const double pi = acos(-1);
+const int N = 1010;
+ll dp[N];
+ll p[N];
 int main(){
-    cin >> a >> b;
-    ll op = abs(b-a);
-    ll val = a/__gcd(a,b);
-    val*=b;
-    ll ans = 0;
-    for(ll q = 1; q*q <= op; ++q){
-        if(op%q)continue;
-        ll f;
-        f = q;
-        if(a%f != 0){
-            ll k = f-(a%f);
-            ll v = (a+k)/__gcd(a+k,b+k);
-            v*=(b+k);
-            if(v < val){
-                val = v;
-                ans = k;
-            }
-        }
-        f = op/q;
-        if(a%f != 0){
-            ll k = f-(a%f);
-            ll v = (a+k)/__gcd(a+k,b+k);
-            v*=(b+k);
-            if(v < val){
-                val = v;
-                ans = k;
-            }
+    int n;
+    cin >> n;
+    loop(i,0,n)cin >> p[i];
+    loop(i,0,n){
+        dp[i]=1;
+        loop(j,p[i]-1,i){
+            dp[i]+=(dp[j]+1);
+            dp[i]%=MOD;
         }
     }
+    ll ans = 0;
+    loop(i,0,n){
+        ans+=(dp[i]+1);
+        ans%=MOD;
+    }
     cout << ans;
-  return 0;
+   return 0;
 }

@@ -9,8 +9,8 @@
 #define loopr(i,a,b) for(int i=a;i>=b;i--)
 #define loops(i,a,b,step) for(int i=a;i<b;i+=step)
 #define looprs(i,a,b,step) for(int i=a;i>=b;i-=step)
-#define ll long long int
 #define ull unsigned long long int
+#define ll long long int
 #define P pair
 #define PLL pair<long long, long long>
 #define PII pair<int, int>
@@ -34,6 +34,7 @@
 #define FILE_READ_IN freopen("input.txt","r",stdin);
 #define FILE_READ_OUT freopen("output.txt","w",stdout);
 #define all(a) a.begin(),a.end()
+#define ld long double
 using namespace std;
 // For ordered_set
 using namespace __gnu_pbds;
@@ -42,78 +43,43 @@ using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_
 const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
-const int MAX_BIT = 62;
-ll l, r, k;
-
-struct hash_pair{
-    template<class T1,class T2>
-    size_t operator()(const pair<T1,T2>& p)const{
-        auto hash1 = hash<T1>{}(p.first);
-        auto hash2 = hash<T1>{}(p.second);
-        return hash1^hash2;
-    }
-};
-
-unordered_map<PLL,ll, hash_pair> dp;
-ll msb( ll a){
-    ll cnt = 0;
-    while(a > 0){
-        cnt++;
-        a/=2;
-    }
-    return cnt-1;
-}
-
-ll cnt(ll r, ll x){
-    // * Supermax check
-    if(x > r)return 0;
-    ll ans = 0;
-    bool o = false;
-    loopr(i,59,0){
-        if(((r >> i) & 1) == 1 && ((x >> i) & 1) == 0 && !o){
-            ans+=(1LL << i);
-        }else if(((x >> i) & 1) == 1){
-            ans>>=1;
-            if(((r >> 1) & 1) == 0) o = true;
-        }
-    }
-    return ans + ((x & r) == x);
-}
 
 void solve(){
-    ll ind = MAX_BIT;
-    scanf("%lld %lld %lld",&l,&r,&k);
-    ll MX = 0, Cnt = 0;
-	ll pr = 0, pl = 0;
-	bool tr = 1, tl = 1;
-	for (int i = 59; ~ i; i --)
-	{
-		Cnt = (pr >> 1) - (pl >> 1);
-		if (tr & ((r>>i)&1))
-			Cnt += (r & ((1LL << i) - 1)) + 1;
-		if (tl & ((l>>i)&1))
-			Cnt -= (l & ((1LL << i) - 1)) + 1;
-		if (Cnt >= k)
-		{
-			MX |= 1LL << i;
-			pl >>= 1; tl &= ((l >> i) & 1);
-			pr >>= 1; tr &= ((r >> i) & 1);
-		}
-		else
-		{
-			pl |= (tl & ((l >> i) & 1)) << i;
-			pr |= (tr & ((r >> i) & 1)) << i;
-		}
-	}
-    printf("%lld\n",MX);
+    int n,a;
+    scanf("%d",&n);
+    unordered_map<int,int> m;
+    while(n--){
+        scanf("%d",&a);
+        m[a]++;
+    }
+    V<int> f;
+    for(auto i: m)f.pb(i.second);
+    sort(all(f));
+    int ans = 0;
+    loopr(i,f[0]+1,1){
+        bool mat = true;
+        int tot = 0;
+        for(int k: f){
+            int s = k/i;
+            int rem = k%i;
+            tot+=s;
+            if(rem != 0){
+                int req = i-1-rem;
+                if(req > s){
+                    mat = false;
+                    break;
+                }else{
+                    tot++;
+                }
+            }
+        }
+        if(mat){cout << tot << "\n"; return;}
+    }
 }
 
 int main(){
-   int t = 0;
+    int t;
     scanf("%d",&t);
-   while(t--){
-       solve();
-   }
-//    cout << cnt(9,4) << "\n";
+    while(t--)solve();
    return 0;
 }

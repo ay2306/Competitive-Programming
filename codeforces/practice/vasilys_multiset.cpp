@@ -9,8 +9,8 @@
 #define loopr(i,a,b) for(int i=a;i>=b;i--)
 #define loops(i,a,b,step) for(int i=a;i<b;i+=step)
 #define looprs(i,a,b,step) for(int i=a;i>=b;i-=step)
-#define ll long long int
 #define ull unsigned long long int
+#define ll long long int
 #define P pair
 #define PLL pair<long long, long long>
 #define PII pair<int, int>
@@ -34,6 +34,7 @@
 #define FILE_READ_IN freopen("input.txt","r",stdin);
 #define FILE_READ_OUT freopen("output.txt","w",stdout);
 #define all(a) a.begin(),a.end()
+#define ld long double
 using namespace std;
 // For ordered_set
 using namespace __gnu_pbds;
@@ -42,78 +43,61 @@ using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_
 const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
-const int MAX_BIT = 62;
-ll l, r, k;
-
-struct hash_pair{
-    template<class T1,class T2>
-    size_t operator()(const pair<T1,T2>& p)const{
-        auto hash1 = hash<T1>{}(p.first);
-        auto hash2 = hash<T1>{}(p.second);
-        return hash1^hash2;
-    }
+struct node{
+    int l;
+    unordered_map<int,node*> child;
+    node(int a):l(a){}
 };
+node *top;
 
-unordered_map<PLL,ll, hash_pair> dp;
-ll msb( ll a){
-    ll cnt = 0;
-    while(a > 0){
-        cnt++;
-        a/=2;
+void insert(ll val){
+    node *temp = top;
+    for(int i = 40; i >= 0; --i){
+        int b = ((val >> i)&1);
+        if(temp->child.find(b) == temp->child.end()){
+            temp->child[b] = new node(0);
+        }
+        temp = temp->child[b];
+        temp->l++;
     }
-    return cnt-1;
 }
 
-ll cnt(ll r, ll x){
-    // * Supermax check
-    if(x > r)return 0;
+void del(ll val){
+    node *temp = top;
+    for(int i = 40; i >= 0; --i){
+        int b = ((val >> i)&1);
+        temp = temp->child[b];
+        temp->l--;
+    }
+}
+
+ll max_xor(ll x){
+    node *temp = top;
     ll ans = 0;
-    bool o = false;
-    loopr(i,59,0){
-        if(((r >> i) & 1) == 1 && ((x >> i) & 1) == 0 && !o){
-            ans+=(1LL << i);
-        }else if(((x >> i) & 1) == 1){
-            ans>>=1;
-            if(((r >> 1) & 1) == 0) o = true;
+    for(int i = 40; i >= 0; --i){
+        int b = ((x >> i)&1);
+        if(temp->child.find(1^b) != temp->child.end() && temp->child[1^b]->l > 0){
+            ans|=(1LL << i);
+            temp = temp->child[1^b];
+        }else{
+            if(temp->child.find(b) == temp->child.end())temp->child[b] = new node(0);
+            temp = temp->child[b];
         }
     }
-    return ans + ((x & r) == x);
-}
-
-void solve(){
-    ll ind = MAX_BIT;
-    scanf("%lld %lld %lld",&l,&r,&k);
-    ll MX = 0, Cnt = 0;
-	ll pr = 0, pl = 0;
-	bool tr = 1, tl = 1;
-	for (int i = 59; ~ i; i --)
-	{
-		Cnt = (pr >> 1) - (pl >> 1);
-		if (tr & ((r>>i)&1))
-			Cnt += (r & ((1LL << i) - 1)) + 1;
-		if (tl & ((l>>i)&1))
-			Cnt -= (l & ((1LL << i) - 1)) + 1;
-		if (Cnt >= k)
-		{
-			MX |= 1LL << i;
-			pl >>= 1; tl &= ((l >> i) & 1);
-			pr >>= 1; tr &= ((r >> i) & 1);
-		}
-		else
-		{
-			pl |= (tl & ((l >> i) & 1)) << i;
-			pr |= (tr & ((r >> i) & 1)) << i;
-		}
-	}
-    printf("%lld\n",MX);
+    return max(ans,x);
 }
 
 int main(){
-   int t = 0;
-    scanf("%d",&t);
-   while(t--){
-       solve();
-   }
-//    cout << cnt(9,4) << "\n";
+    int q;
+    cin >> q;
+    top = new node(0);
+    while(q--){
+        char a;
+        ll x;
+        cin  >> a >> x;
+        if(a == '-')del(x);
+        if(a == '+')insert(x);
+        if(a == '?')cout << max_xor(x) << "\n";
+    }
    return 0;
 }

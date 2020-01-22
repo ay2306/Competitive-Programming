@@ -1,11 +1,7 @@
-/*
- ____________________________________________________________
-|                                                            |
-|                   Author: ay2306                           |
-|____________________________________________________________|
-
-*/
 #include <bits/stdc++.h>
+//For ordered_set
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
 #define MOD 1000000007
 #define test int t; cin>>t; while(t--)
 #define init(arr,val) memset(arr,val,sizeof(arr))
@@ -37,41 +33,37 @@
 #define FAST ios_base::sync_with_stdio(false);cin.tie();cout.tie();
 #define FILE_READ_IN freopen("input.txt","r",stdin);
 #define FILE_READ_OUT freopen("output.txt","w",stdout);
+#define all(a) a.begin(),a.end()
+#define ld long double
 using namespace std;
-
+// For ordered_set
+using namespace __gnu_pbds;
+template <typename T>
+using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
 const ll maxn = 1e5;
-ll a,b;
+const ll inf = 1e9;
+const double pi = acos(-1);
 
 int main(){
-    cin >> a >> b;
-    ll op = abs(b-a);
-    ll val = a/__gcd(a,b);
-    val*=b;
-    ll ans = 0;
-    for(ll q = 1; q*q <= op; ++q){
-        if(op%q)continue;
-        ll f;
-        f = q;
-        if(a%f != 0){
-            ll k = f-(a%f);
-            ll v = (a+k)/__gcd(a+k,b+k);
-            v*=(b+k);
-            if(v < val){
-                val = v;
-                ans = k;
-            }
-        }
-        f = op/q;
-        if(a%f != 0){
-            ll k = f-(a%f);
-            ll v = (a+k)/__gcd(a+k,b+k);
-            v*=(b+k);
-            if(v < val){
-                val = v;
-                ans = k;
-            }
-        }
+    FAST
+    ll n,k;
+    cin >> n >> k;
+    V<ll> arr(n);
+    V<ll> dp(n);
+    loop(i,0,n){
+        cin >> arr[i];
     }
-    cout << ans;
-  return 0;
+    multiset<ll> m;
+    dp[0] = 0;
+    m.insert(arr[0]);
+    loop(i,1,n){
+        if(i - k - 1 >= 0){
+            auto it = m.find(dp[i-k-1]+arr[i-1-k]);
+            m.erase(it);
+        }
+        dp[i] = *m.begin();
+        m.insert(dp[i]+arr[i]);
+    }
+    cout << dp[n-1] << "\n";
+   return 0;
 }
