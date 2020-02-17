@@ -28,14 +28,11 @@ int main(){
     cin >> a;
     auto z = z_val(a);
     int ans = 0;
-    int n = a.size(),maxz=0;
+    int n = a.size();
     for(int i = 0; i < n; ++i){
         if(z[i] <= ans)continue;
-        if(maxz >= n-i && z[i] == n-i){
-            // printf("index = %d, char = %c, z[i] = %d\n",i,a[i],z[i]);
-            ans = n-i; break;
-        }
-        maxz = max(maxz,z[i]);
+        if(z[n-z[i]] != z[i] && i-1+z[i] == n-1)continue;
+        ans = z[i];
     }
     if(ans == 0)cout << "Just a legend";
     else for(int i = 0; i < ans; ++i)cout << a[i];

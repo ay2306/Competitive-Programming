@@ -40,73 +40,44 @@ using namespace std;
 using namespace __gnu_pbds;
 template <typename T>
 using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-const ll N = 1e5+10;
+const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
-int ancestor[20][N];
-V<int> adj[N];
-int level[N];
-void init_dfs(int s, int p = -1){
-    ancestor[0][s] = p;
-    if(p == -1)level[s] = 0;
-    else level[s] = level[p]+1;
-    for(auto i: adj[s]){
-        if(i != p)init_dfs(i,s);
-    }
-}
 
-void pre(){
-    fill(ancestor[0],ancestor[0]+N,-2);
-    loop(i,1,N)if(ancestor[0][i] == -2)init_dfs(i);
-    loop(j,1,20){
-        loop(i,1,N){
-            ancestor[j][i] = ancestor[j-1][ancestor[j-1][i]];
+ll m[2][2] = {{1,1},{1,0}};
+
+void multiply(ll a[2][2], ll b[2][2]){
+    ll c[2][2];
+    loop(i,0,2){
+        loop(j,0,2){
+            c[i][j] = 0;
+            loop(k,0,2){
+                c[i][j]+=(a[i][k]*b[k][j]);
+                if(c[i][j] >= MOD)c[i][j]%=MOD;
+            }
         }
     }
+    loop(i,0,2)loop(j,0,2)a[i][j]=c[i][j];
 }
 
-int lca(int a, int b){
-    if(level[a] > level[b])swap(a,b);
-    int diff = level[b]-level[a];
-    // cout << a << " " << b << "\n";
-    loop(j,0,20){
-        if((1<<j)&diff)b=ancestor[j][b];
-    }
-    if(a == b)return a;
-    // cout << level[a] << " " << a;
-    loopr(j,19,0){
-        if(ancestor[j][a] != ancestor[j][b]){
-            b = ancestor[j][b];
-            a = ancestor[j][a];
-        }
-    }
-    return ancestor[0][a];
+ll power(ll a[2][2], ll n){
+    if(n == 0)return 1;
+    if(n == 1)return (a[0][1] + a[0][0])%MOD;
+    power(a,n>>1);
+    multiply(a,a);
+    if(n&1)multiply(a,m);
+    return (a[0][0] + a[0][1])%MOD;
 }
-
 
 int main(){
-    int n;
-    int q;
-    cin >> n;
-    cin >> q;
-    loop(i,1,n){
-        int a,b;
-        cin >> a >> b;
-        adj[a].pb(b);
-        adj[b].pb(a);
-    }
-    pre();
-    while(q--){
-        int a,b,c;
-        cin >> a >> b >> c;
-        int e = lca(a,b);
-        int f = lca(c,b);
-        int g = lca(c,a);
-        if(e == c || (f == c && g == a) || (f == b && g == c) || (f == c && g == e) || (g == c && f == e)){
-            cout << "YES\n";
-        }else{
-            cout << "NO\n";
-        }
+    int t;
+    cin >> t;
+    while(t--){
+        char c;ll n;
+        cin >> c >> n;
+        ll a[2][2] = {{1,1},{1,0}};
+        if(c == 'm')cout << power(a,n-1) << "\n";
+        else cout << power(a,n) << "\n";
     }
    return 0;
 }

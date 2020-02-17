@@ -40,73 +40,43 @@ using namespace std;
 using namespace __gnu_pbds;
 template <typename T>
 using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-const ll N = 1e5+10;
+const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
-int ancestor[20][N];
-V<int> adj[N];
-int level[N];
-void init_dfs(int s, int p = -1){
-    ancestor[0][s] = p;
-    if(p == -1)level[s] = 0;
-    else level[s] = level[p]+1;
-    for(auto i: adj[s]){
-        if(i != p)init_dfs(i,s);
-    }
-}
-
-void pre(){
-    fill(ancestor[0],ancestor[0]+N,-2);
-    loop(i,1,N)if(ancestor[0][i] == -2)init_dfs(i);
-    loop(j,1,20){
-        loop(i,1,N){
-            ancestor[j][i] = ancestor[j-1][ancestor[j-1][i]];
-        }
-    }
-}
-
-int lca(int a, int b){
-    if(level[a] > level[b])swap(a,b);
-    int diff = level[b]-level[a];
-    // cout << a << " " << b << "\n";
-    loop(j,0,20){
-        if((1<<j)&diff)b=ancestor[j][b];
-    }
-    if(a == b)return a;
-    // cout << level[a] << " " << a;
-    loopr(j,19,0){
-        if(ancestor[j][a] != ancestor[j][b]){
-            b = ancestor[j][b];
-            a = ancestor[j][a];
-        }
-    }
-    return ancestor[0][a];
-}
-
 
 int main(){
     int n;
-    int q;
     cin >> n;
-    cin >> q;
-    loop(i,1,n){
-        int a,b;
-        cin >> a >> b;
-        adj[a].pb(b);
-        adj[b].pb(a);
+    V<int> a(1,-1);
+    V<int> b(1,-1);
+    loop(i,0,n){
+        int k;
+        cin >> k;
+        if(a.back() == k)continue;
+        a.pb(k);
+        b.pb(k);
     }
-    pre();
-    while(q--){
-        int a,b,c;
-        cin >> a >> b >> c;
-        int e = lca(a,b);
-        int f = lca(c,b);
-        int g = lca(c,a);
-        if(e == c || (f == c && g == a) || (f == b && g == c) || (f == c && g == e) || (g == c && f == e)){
-            cout << "YES\n";
-        }else{
-            cout << "NO\n";
+    reverse(b.begin()+1,b.end());
+    n = a.size()-1;
+    V<V<int>> dp(n+10,V<int>(n+10,0));
+    loop(i,1,n+1){
+        loop(j,1,n+1){
+            if(a[i] == b[j]){
+                dp[i][j] = dp[i-1][j-1]+1;
+            }else{
+                dp[i][j] = max(dp[i-1][j],dp[i][j-1]);
+            }
         }
     }
+    // printf("  / ");
+    // loop(i,1,n+1)printf("%3d ",b[i]);
+    // printf("\n");
+    // loop(i,1,n+1){
+    //     printf("%3d ",a[i]);
+    //     loop(j,1,n+1)printf("%3d ",dp[i][j]);
+    //     printf("\n");
+    // }
+    // cout << dp[n][n] << "\n";
+    cout << n - (dp[n][n]+1)/2;
    return 0;
 }

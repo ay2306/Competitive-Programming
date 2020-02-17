@@ -40,73 +40,54 @@ using namespace std;
 using namespace __gnu_pbds;
 template <typename T>
 using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-const ll N = 1e5+10;
+const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
-int ancestor[20][N];
-V<int> adj[N];
-int level[N];
-void init_dfs(int s, int p = -1){
-    ancestor[0][s] = p;
-    if(p == -1)level[s] = 0;
-    else level[s] = level[p]+1;
-    for(auto i: adj[s]){
-        if(i != p)init_dfs(i,s);
+ll n,k,a;
+ll bn(ll j){
+    ll lo = 0;
+    ll hi = j;
+    ll ans = 0;
+    while(lo <= hi){
+        ll mi = lo+hi>>1;
+        if(mi*a+(mi-1) <= j){
+            ans = mi;
+            lo = mi+1;
+        }else hi = mi - 1;
     }
+    return ans;
 }
-
-void pre(){
-    fill(ancestor[0],ancestor[0]+N,-2);
-    loop(i,1,N)if(ancestor[0][i] == -2)init_dfs(i);
-    loop(j,1,20){
-        loop(i,1,N){
-            ancestor[j][i] = ancestor[j-1][ancestor[j-1][i]];
-        }
-    }
-}
-
-int lca(int a, int b){
-    if(level[a] > level[b])swap(a,b);
-    int diff = level[b]-level[a];
-    // cout << a << " " << b << "\n";
-    loop(j,0,20){
-        if((1<<j)&diff)b=ancestor[j][b];
-    }
-    if(a == b)return a;
-    // cout << level[a] << " " << a;
-    loopr(j,19,0){
-        if(ancestor[j][a] != ancestor[j][b]){
-            b = ancestor[j][b];
-            a = ancestor[j][a];
-        }
-    }
-    return ancestor[0][a];
-}
-
 
 int main(){
-    int n;
-    int q;
-    cin >> n;
-    cin >> q;
-    loop(i,1,n){
-        int a,b;
-        cin >> a >> b;
-        adj[a].pb(b);
-        adj[b].pb(a);
+    FAST
+    cin >> n >> k >> a;
+    ll ships = bn(n);
+    if(ships < k){
+        cout << 0;
+        return 0;
     }
-    pre();
+    ll ans = 0,q,v;
+    set<PLL> s;
+    s.insert(mp(1,n));
+    cin >> q;
     while(q--){
-        int a,b,c;
-        cin >> a >> b >> c;
-        int e = lca(a,b);
-        int f = lca(c,b);
-        int g = lca(c,a);
-        if(e == c || (f == c && g == a) || (f == b && g == c) || (f == c && g == e) || (g == c && f == e)){
-            cout << "YES\n";
-        }else{
-            cout << "NO\n";
+        ans++;
+        cin >> v;
+        auto i = s.upper_bound(mp(v,inf));
+        if(i == s.begin())continue;
+        i--;
+        if(!(i->F <= v && v <= i->S))continue;
+        ships-=bn(i->S-i->F+1);
+        PII p1 = mp(i->F,v-1);
+        PII p2 = mp(v+1,i->S);
+        s.erase(i);
+        if(p1.F <= p1.S)s.insert(p1),ships+=bn(p1.S-p1.F+1);
+        if(p2.F <= p2.S)s.insert(p2),ships+=bn(p2.S-p2.F+1);
+        if(ships < k){
+            cout << ans;
+            return 0;
         }
     }
+    cout << -1;
    return 0;
 }

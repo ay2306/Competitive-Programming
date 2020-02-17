@@ -40,73 +40,40 @@ using namespace std;
 using namespace __gnu_pbds;
 template <typename T>
 using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-const ll N = 1e5+10;
+const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
-int ancestor[20][N];
-V<int> adj[N];
-int level[N];
-void init_dfs(int s, int p = -1){
-    ancestor[0][s] = p;
-    if(p == -1)level[s] = 0;
-    else level[s] = level[p]+1;
-    for(auto i: adj[s]){
-        if(i != p)init_dfs(i,s);
-    }
-}
-
-void pre(){
-    fill(ancestor[0],ancestor[0]+N,-2);
-    loop(i,1,N)if(ancestor[0][i] == -2)init_dfs(i);
-    loop(j,1,20){
-        loop(i,1,N){
-            ancestor[j][i] = ancestor[j-1][ancestor[j-1][i]];
-        }
-    }
-}
-
-int lca(int a, int b){
-    if(level[a] > level[b])swap(a,b);
-    int diff = level[b]-level[a];
-    // cout << a << " " << b << "\n";
-    loop(j,0,20){
-        if((1<<j)&diff)b=ancestor[j][b];
-    }
-    if(a == b)return a;
-    // cout << level[a] << " " << a;
-    loopr(j,19,0){
-        if(ancestor[j][a] != ancestor[j][b]){
-            b = ancestor[j][b];
-            a = ancestor[j][a];
-        }
-    }
-    return ancestor[0][a];
-}
-
-
+using namespace std;
+#define PDD pair<ld,ld>
 int main(){
-    int n;
-    int q;
-    cin >> n;
-    cin >> q;
-    loop(i,1,n){
-        int a,b;
-        cin >> a >> b;
-        adj[a].pb(b);
-        adj[b].pb(a);
+    FAST
+    ll n,p;
+    cin >> n >> p;
+    V<PDD> a(n);
+    loop(i,0,n)cin >> a[i].F >> a[i].S;
+    ld s = 0;
+    loop(i,0,n)s+=a[i].F;
+    if(s <= p){
+        cout << -1;
+        return 0;
     }
-    pre();
-    while(q--){
-        int a,b,c;
-        cin >> a >> b >> c;
-        int e = lca(a,b);
-        int f = lca(c,b);
-        int g = lca(c,a);
-        if(e == c || (f == c && g == a) || (f == b && g == c) || (f == c && g == e) || (g == c && f == e)){
-            cout << "YES\n";
+    ld low = 0;
+    ld high = 1e18;
+    ld ans = 0;
+    ld z = 0;
+    while(high-low >= 1e-6){
+        ld mid = (low+high)/2.0;
+        ld cons = 0.0;
+        loop(i,0,n)cons+=max((a[i].F*mid)-a[i].S,z);
+        ld avail = p*mid;
+        // printf("mid = %Lf, cons = %Lf, avail = %Lf\n",mid,cons,avail);
+        if(avail-cons >= 1e-9){
+            low = mid;
+            ans = max(ans,mid);
         }else{
-            cout << "NO\n";
+            high = mid;
         }
     }
-   return 0;
+    printf("%.10Lf",ans);
+    return 0;
 }

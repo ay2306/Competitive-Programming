@@ -40,73 +40,59 @@ using namespace std;
 using namespace __gnu_pbds;
 template <typename T>
 using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-const ll N = 1e5+10;
+const ll N = 5e3+100;
 const ll inf = 1e9;
 const double pi = acos(-1);
-int ancestor[20][N];
-V<int> adj[N];
-int level[N];
-void init_dfs(int s, int p = -1){
-    ancestor[0][s] = p;
-    if(p == -1)level[s] = 0;
-    else level[s] = level[p]+1;
-    for(auto i: adj[s]){
-        if(i != p)init_dfs(i,s);
+
+int lt[N],dt[N],in[N],ct,scc_number[N],sc,d[N];
+stack<int> s;
+V<int> g[N];
+
+void popper(int st){
+    ++sc;
+    while(s.size()){
+        int n = s.top();
+        s.pop();
+        in[n] = 0;
+        scc_number[n]=sc;
+        if(n == st)break;
     }
 }
 
-void pre(){
-    fill(ancestor[0],ancestor[0]+N,-2);
-    loop(i,1,N)if(ancestor[0][i] == -2)init_dfs(i);
-    loop(j,1,20){
-        loop(i,1,N){
-            ancestor[j][i] = ancestor[j-1][ancestor[j-1][i]];
+void dfs(int u){
+    lt[u] = dt[u] = ++ct;
+    in[u]=1;
+    s.push(u);
+    for(auto &v: g[u]){
+        if(in[v])lt[u]=min(lt[u],lt[v]);
+        else if(dt[v] == 0){
+            dfs(v);
+            lt[u]=min(lt[u],lt[v]);
         }
     }
-}
-
-int lca(int a, int b){
-    if(level[a] > level[b])swap(a,b);
-    int diff = level[b]-level[a];
-    // cout << a << " " << b << "\n";
-    loop(j,0,20){
-        if((1<<j)&diff)b=ancestor[j][b];
+    if(lt[u]==dt[u]){
+        popper(u);
     }
-    if(a == b)return a;
-    // cout << level[a] << " " << a;
-    loopr(j,19,0){
-        if(ancestor[j][a] != ancestor[j][b]){
-            b = ancestor[j][b];
-            a = ancestor[j][a];
-        }
-    }
-    return ancestor[0][a];
 }
 
 
 int main(){
-    int n;
-    int q;
-    cin >> n;
-    cin >> q;
-    loop(i,1,n){
+    int n,m,k;
+    cin >> n >> m >> k;
+    loop(i,0,m){
         int a,b;
         cin >> a >> b;
-        adj[a].pb(b);
-        adj[b].pb(a);
+        g[a].pb(b);
     }
-    pre();
-    while(q--){
-        int a,b,c;
-        cin >> a >> b >> c;
-        int e = lca(a,b);
-        int f = lca(c,b);
-        int g = lca(c,a);
-        if(e == c || (f == c && g == a) || (f == b && g == c) || (f == c && g == e) || (g == c && f == e)){
-            cout << "YES\n";
-        }else{
-            cout << "NO\n";
-        }
+    loop(i,1,n+1)if(dt[i] == 0)dfs(i);
+    loop(i,1,n+1){
+        for(auto &j: g[i])if(scc_number[i] != scc_number[j])d[scc_number[j]]++;
     }
+    int ans = 0;
+    ans-=(d[scc_number[k]] == 0);
+    loop(i,1,sc +1){
+        ans+=(d[i]==0);
+    }
+    cout << ans;
    return 0;
 }

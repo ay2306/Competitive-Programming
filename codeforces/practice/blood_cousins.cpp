@@ -51,7 +51,7 @@ void init_dfs(int s, int p = -1){
     if(p == -1)level[s] = 0;
     else level[s] = level[p]+1;
     for(auto i: adj[s]){
-        if(i != p)init_dfs(i,s);
+        init_dfs(i,s);
     }
 }
 
@@ -68,12 +68,9 @@ void pre(){
 int lca(int a, int b){
     if(level[a] > level[b])swap(a,b);
     int diff = level[b]-level[a];
-    // cout << a << " " << b << "\n";
     loop(j,0,20){
-        if((1<<j)&diff)b=ancestor[j][b];
+        if((1<<j)&diff)a=ancestor[j][a];
     }
-    if(a == b)return a;
-    // cout << level[a] << " " << a;
     loopr(j,19,0){
         if(ancestor[j][a] != ancestor[j][b]){
             b = ancestor[j][b];
@@ -85,28 +82,13 @@ int lca(int a, int b){
 
 
 int main(){
-    int n;
-    int q;
-    cin >> n;
-    cin >> q;
-    loop(i,1,n){
-        int a,b;
-        cin >> a >> b;
-        adj[a].pb(b);
-        adj[b].pb(a);
-    }
     pre();
-    while(q--){
-        int a,b,c;
-        cin >> a >> b >> c;
-        int e = lca(a,b);
-        int f = lca(c,b);
-        int g = lca(c,a);
-        if(e == c || (f == c && g == a) || (f == b && g == c) || (f == c && g == e) || (g == c && f == e)){
-            cout << "YES\n";
-        }else{
-            cout << "NO\n";
-        }
+    int n;
+    cin >> n;
+    loop(i,1,n+1){
+        int a;
+        cin >> a;
+        if(a != 0)adj[a].pb(i);
     }
    return 0;
 }

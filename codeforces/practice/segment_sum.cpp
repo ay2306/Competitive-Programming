@@ -32,6 +32,7 @@
 #define MM multimap
 #define F first
 #define S second
+#define all(a) a.begin(), a.end()
 #define IT iterator
 #define RIT reverse_iterator
 #define FAST ios_base::sync_with_stdio(false);cin.tie();cout.tie();
@@ -39,34 +40,62 @@
 #define MAXN 25
 using namespace std;
 const ll mod = 998244353;
-ll dp[20][1024][2];
-
-vector<int> num;
-ll l,r,k;
-ll p[20];
-ll ans = 0;
-
-ll solve(int pos, int bits, int f, ll s){
+ll dp[20][(1<<10)][2];
+V<int> num;
+int k;
+ll fn(int pos = 0, int mask = 0, int comp = 0){
     if(pos == num.size()){
-        bitset<20> bit = bits;
-        if(bit.count() > k)return 0;
-        return s;
+        // cout << mask << "\n";
+        return (__builtin_popcount(mask) < k && mask > 0);
     }
-    if(dp[pos][bits][f])
+    ll &res = dp[pos][mask][comp];
+    if(res != -1)return res;
+    res = 0;
+    int last = 9;
+    if(comp == 0){
+        last = num[pos];
+    }
+    loop(i,0,last){
+        if(comp == 0 && i == last)res+=fn(pos+1,(mask|(1<<i)),0);
+        else res+=fn(pos+1,(mask|(1<<i)),1);
+        if(res >= mod)res-=mod;
+    }
+    return res;
+}
+
+void pre(){
+    loop(i,0,20){
+        loop(j,0,(1<<10)){
+            loop(k,0,2){
+                dp[i][j][k] = -1;
+            }
+        }
+    }
 }
 
 int main(){
-    ll o = 1;
-    loop(i,0,20){
-        o%=mod;
-        p[i] = o;
-    }
-    cin >> l >> r;
+    ll l,r;
+    cin >> l >> r >> k;
+    l--;
+    pre();
     while(r){
         num.pb(r%10);
         r/=10;
     }
-    reverse(num.begin(),num.end());
-    ll s1 = solve(0,0,0,0);
+    reverse(all(num));
+    ll s1 = fn();
+    num.clear();
+    ll s2 = 0;
+    pre();
+    if(l){
+        while(l){
+            num.pb(l%10);
+            l/=10;
+        }
+        reverse(all(num));
+        s2 = fn();
+    }
+    cout << s1 << " " << s2 << "\n";
+    cout << (s1-s2+mod)%mod;
     return 0;
 }

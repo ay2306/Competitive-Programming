@@ -46,34 +46,22 @@ const double pi = acos(-1);
 int ancestor[20][N];
 V<int> adj[N];
 int level[N];
-void init_dfs(int s, int p = -1){
-    ancestor[0][s] = p;
-    if(p == -1)level[s] = 0;
-    else level[s] = level[p]+1;
-    for(auto i: adj[s]){
-        if(i != p)init_dfs(i,s);
-    }
-}
 
-void pre(){
-    fill(ancestor[0],ancestor[0]+N,-2);
-    loop(i,1,N)if(ancestor[0][i] == -2)init_dfs(i);
+void setNode(int k, int p){
+    ancestor[0][k] = p;
+    level[k] = (p == -1 ? 0 : level[p]+1);
     loop(j,1,20){
-        loop(i,1,N){
-            ancestor[j][i] = ancestor[j-1][ancestor[j-1][i]];
-        }
+        if(ancestor[j-1][k] != -1)ancestor[j][k] = ancestor[j-1][ancestor[j-1][k]];
     }
 }
 
-int lca(int a, int b){
+int findLCA(int a, int b){
     if(level[a] > level[b])swap(a,b);
     int diff = level[b]-level[a];
-    // cout << a << " " << b << "\n";
     loop(j,0,20){
-        if((1<<j)&diff)b=ancestor[j][b];
+        if((diff>>j)&1)b=ancestor[j][b];
     }
-    if(a == b)return a;
-    // cout << level[a] << " " << a;
+    if(a == b)return b;
     loopr(j,19,0){
         if(ancestor[j][a] != ancestor[j][b]){
             b = ancestor[j][b];
@@ -83,30 +71,39 @@ int lca(int a, int b){
     return ancestor[0][a];
 }
 
+int distance(int a, int b){
+    int l = findLCA(a,b);
+    if(l == a || l == b){
+        return abs(level[a]-level[b]);
+    }
+    return (level[a] + level[b] - 2*level[l]);
+}
+
+void solve(){
+    memset(ancestor,-1,sizeof(ancestor));
+    int n;
+    cin >> n;
+    setNode(1,-1);
+    int v1 = 1;
+    int v2 = 1;
+    int ans = 0;
+    loop(i,2,n+1){
+        int p;
+        cin >> p;
+        setNode(i,p);
+        int v3 = i;
+        int d1 = distance(v1,v3);
+        int d2 = distance(v2,v3);
+        if(d1 > ans && d1 > d2)v2=i,ans=d1;
+        if(d2 > ans)v1=i,ans=d2;
+        cout << ans << "\n";
+    }
+}
 
 int main(){
-    int n;
-    int q;
-    cin >> n;
-    cin >> q;
-    loop(i,1,n){
-        int a,b;
-        cin >> a >> b;
-        adj[a].pb(b);
-        adj[b].pb(a);
-    }
-    pre();
-    while(q--){
-        int a,b,c;
-        cin >> a >> b >> c;
-        int e = lca(a,b);
-        int f = lca(c,b);
-        int g = lca(c,a);
-        if(e == c || (f == c && g == a) || (f == b && g == c) || (f == c && g == e) || (g == c && f == e)){
-            cout << "YES\n";
-        }else{
-            cout << "NO\n";
-        }
-    }
+    FAST
+    int t;
+    cin >> t;
+    while(t--)solve();
    return 0;
 }

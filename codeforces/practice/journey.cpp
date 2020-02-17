@@ -40,73 +40,52 @@ using namespace std;
 using namespace __gnu_pbds;
 template <typename T>
 using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-const ll N = 1e5+10;
+const ll N = 5e3+2;
 const ll inf = 1e9;
 const double pi = acos(-1);
-int ancestor[20][N];
-V<int> adj[N];
-int level[N];
-void init_dfs(int s, int p = -1){
-    ancestor[0][s] = p;
-    if(p == -1)level[s] = 0;
-    else level[s] = level[p]+1;
-    for(auto i: adj[s]){
-        if(i != p)init_dfs(i,s);
-    }
-}
-
-void pre(){
-    fill(ancestor[0],ancestor[0]+N,-2);
-    loop(i,1,N)if(ancestor[0][i] == -2)init_dfs(i);
-    loop(j,1,20){
-        loop(i,1,N){
-            ancestor[j][i] = ancestor[j-1][ancestor[j-1][i]];
-        }
-    }
-}
-
-int lca(int a, int b){
-    if(level[a] > level[b])swap(a,b);
-    int diff = level[b]-level[a];
-    // cout << a << " " << b << "\n";
-    loop(j,0,20){
-        if((1<<j)&diff)b=ancestor[j][b];
-    }
-    if(a == b)return a;
-    // cout << level[a] << " " << a;
-    loopr(j,19,0){
-        if(ancestor[j][a] != ancestor[j][b]){
-            b = ancestor[j][b];
-            a = ancestor[j][a];
-        }
-    }
-    return ancestor[0][a];
-}
-
-
+int n,m,T;
+int dp[N][N];
+int p[N][N];
+V<PII> g[N];
 int main(){
-    int n;
-    int q;
-    cin >> n;
-    cin >> q;
-    loop(i,1,n){
-        int a,b;
-        cin >> a >> b;
-        adj[a].pb(b);
-        adj[b].pb(a);
+    FAST
+    cin >> n >> m >> T;
+    loop(i,0,N){
+        loop(j,0,N)dp[i][j]=-1,p[i][j]=-1;
     }
-    pre();
-    while(q--){
-        int a,b,c;
+    while(m--){
+        ll a,b,c;
         cin >> a >> b >> c;
-        int e = lca(a,b);
-        int f = lca(c,b);
-        int g = lca(c,a);
-        if(e == c || (f == c && g == a) || (f == b && g == c) || (f == c && g == e) || (g == c && f == e)){
-            cout << "YES\n";
-        }else{
-            cout << "NO\n";
+        g[a].pb({b,c});
+    }
+    dp[1][1] = 0;
+    int mx = -1;
+    loop(j,1,n){
+        loop(i,1,n+1){
+            if(dp[i][j] == -1)continue;
+            for(auto k: g[i]){
+                if(dp[k.F][j+1] == -1 || dp[k.F][j+1] > dp[i][j]+k.second){
+                    dp[k.F][j+1] = dp[i][j]+k.second;
+                    p[k.first][j+1]=i;
+                }
+            }
         }
+    }
+    loopr(i,n,0){
+        if(dp[n][i] <= T && dp[n][i] >= 0){
+            mx = i;
+            break;
+        }
+    }
+    stack<int> s;
+    while(n > 0){
+        s.push(n);
+        n = p[n][mx--];
+    }
+    cout << s.size() << "\n";
+    while(s.size()){
+        cout << s.top() << " ";
+        s.pop();
     }
    return 0;
 }

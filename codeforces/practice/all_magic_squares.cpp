@@ -40,73 +40,65 @@ using namespace std;
 using namespace __gnu_pbds;
 template <typename T>
 using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-const ll N = 1e5+10;
+const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
-int ancestor[20][N];
-V<int> adj[N];
-int level[N];
-void init_dfs(int s, int p = -1){
-    ancestor[0][s] = p;
-    if(p == -1)level[s] = 0;
-    else level[s] = level[p]+1;
-    for(auto i: adj[s]){
-        if(i != p)init_dfs(i,s);
+
+bool check(V<V<int>> &a){
+    int s3=0,s4=0;
+    unordered_map<int,int> m;
+    loop(i,0,3){
+        int s1 = 0, s2=0;
+        loop(j,0,3){
+            m[a[i][j]]++;
+            s1+=a[i][j];
+            s2+=a[j][i];
+        }
+        s3+=a[i][i];
+        s4+=a[i][2-i];
+        if(s1 != 15 || s2 != 15)return false;
     }
+    if(s3 != 15 || s4 != 15 || m.size() != 9)return false;
+    return true;
 }
 
-void pre(){
-    fill(ancestor[0],ancestor[0]+N,-2);
-    loop(i,1,N)if(ancestor[0][i] == -2)init_dfs(i);
-    loop(j,1,20){
-        loop(i,1,N){
-            ancestor[j][i] = ancestor[j-1][ancestor[j-1][i]];
+V<V<V<int>>> all_magic_squares(){
+    V<V<V<int>>> ans;
+    V<V<int>> arr(3,V<int>(3));
+    loop(i1,1,14){
+        arr[0][0]=i1;
+        int row1_left = 14-i1;
+        loop(i2,1,row1_left+1){
+            arr[0][1] = i2;
+            arr[0][2] = 15-i1-i2;
+            int col1_left = 14-i1;
+            loop(i3,1,col1_left+1){
+                arr[1][0]=i3;
+                arr[2][0] = 15-arr[0][0]-arr[1][0];
+                int col2_left = min(14-arr[1][0],14-arr[0][1]);
+                loop(i4,1,col2_left+1){
+                    arr[1][1] = i4;
+                    arr[1][2] = 15-arr[1][0]-arr[1][1];
+                    arr[2][1] = 15-arr[0][1]-arr[1][1];
+                    arr[2][2] = 15-arr[2][0]-arr[2][1];
+                    if(check(arr))ans.pb(arr);
+                }
+            }
         }
     }
+    return ans;
 }
-
-int lca(int a, int b){
-    if(level[a] > level[b])swap(a,b);
-    int diff = level[b]-level[a];
-    // cout << a << " " << b << "\n";
-    loop(j,0,20){
-        if((1<<j)&diff)b=ancestor[j][b];
-    }
-    if(a == b)return a;
-    // cout << level[a] << " " << a;
-    loopr(j,19,0){
-        if(ancestor[j][a] != ancestor[j][b]){
-            b = ancestor[j][b];
-            a = ancestor[j][a];
-        }
-    }
-    return ancestor[0][a];
-}
-
 
 int main(){
-    int n;
-    int q;
-    cin >> n;
-    cin >> q;
-    loop(i,1,n){
-        int a,b;
-        cin >> a >> b;
-        adj[a].pb(b);
-        adj[b].pb(a);
-    }
-    pre();
-    while(q--){
-        int a,b,c;
-        cin >> a >> b >> c;
-        int e = lca(a,b);
-        int f = lca(c,b);
-        int g = lca(c,a);
-        if(e == c || (f == c && g == a) || (f == b && g == c) || (f == c && g == e) || (g == c && f == e)){
-            cout << "YES\n";
-        }else{
-            cout << "NO\n";
+    auto ans = all_magic_squares();
+    for(auto k: ans){
+        for(auto i: k){
+            for(auto j: i){
+                cout << j << " ";
+            }
+            cout << endl;
         }
+        cout << endl;
     }
    return 0;
 }
