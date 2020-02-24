@@ -43,8 +43,53 @@ using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_
 const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
-
+int n;
+V<PLL> c;
+V<ll> k;
+V<PLL> pos;
 int main(){
-
+   cin >> n;
+   loop(i,0,n){
+      ll e,f;
+      cin >> e >> f;
+      pos.emplace_back(e,f);
+   }
+   loop(i,0,n){
+      ll e;
+      cin >> e;
+      c.emplace_back(e,i);
+   }
+   loop(i,0,n){
+      ll e;
+      cin >> e;
+      k.emplace_back(e);
+   }
+   sort(all(c),greater<PLL> ());
+   ll cst = 0;
+   V<PLL> ed;
+   set<int> s;
+   loop(i,0,n)cst+=c[i].F,s.insert(c[i].S);
+   loop(i,0,n){
+      ll mn = LLONG_MAX;
+      int o;
+      loop(j,i+1,n){
+         if((abs(pos[c[i].S].F-pos[c[j].S].F)+abs(pos[c[i].S].S-pos[c[j].S].S))*(k[c[i].S]+k[c[j].S]) < mn){
+            mn = (abs(pos[c[i].S].F-pos[c[j].S].F)+abs(pos[c[i].S].S-pos[c[j].S].S))*(k[c[i].S]+k[c[j].S]);
+            o = j;
+         }
+      }
+      if(mn < c[i].F){
+         s.erase(c[i].S);
+         cst-=c[i].F;
+         cst+=mn;
+         ed.emplace_back(c[i].S,c[o].S);
+      }
+   }
+   cout << cst << "\n";
+   cout << s.size() << "\n";
+   for(auto &i: s)cout << i+1 << " ";
+   cout << "\n";
+   cout << ed.size() << "\n";
+   for(auto &i: ed)cout << i.F+1 << " " << i.S+1 << "\n";
    return 0;
 }

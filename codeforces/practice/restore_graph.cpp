@@ -43,45 +43,32 @@ using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_
 const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
-
+int n,k;
+PII d[maxn+5];
+V<int> g[maxn+5];
+V<int> lev[maxn+5];
 int main(){
-    int n;
-    cin >> n;
+    cin >> n >> k;
+    loop(i,1,n+1){cin >> d[i].F;d[i].S=i;}
+    sort(d+1,d+1+n);
+    lev[0].pb(d[1].S);
     V<PII> ans;
-    loop(i,0,3){
-        string a;
-        cin >> a;
-        int mx = 0;
-        unordered_map<int,int> m;
-        for(auto &j: a){
-            m[j]++;
-        }
-        if(n == 1 && m.size() == 1){
-            mx = a.size()-1;
-        }else{
-            for(auto &j: m){
-                int rem = a.size()-j.S;
-                if(rem >= n){
-                    mx=max(mx,n+j.S);
-
-                }else{
-                    mx = max(mx,int(a.size()));
-                }
-            }
-        }
-        ans.emplace_back(mx,i);
+    if(d[1].F != 0 || (n > 1 && d[2].F == 0)){
+        cout << -1;
+        return 0;
     }
-    // for(auto &i: ans)printf("per = %d, cost = %d\n",i.S,i.F);
-    sort(all(ans));
-    if(ans[1].F == ans[2].F)cout << "Draw";
-    else{
-        switch (ans[2].S)
-        {
-            case 0: cout << "Kuro"; break;
-            case 1: cout << "Shiro"; break;
-            case 2: cout << "Katie"; break;
+    loop(i,2,n+1){
+        while(lev[d[i].F-1].size() && g[lev[d[i].F-1].back()].size() == k)lev[d[i].F-1].pop_back();
+        if(lev[d[i].F-1].size() == 0){
+            cout << -1;
+            return 0;
         }
+        g[lev[d[i].F-1].back()].pb(d[i].S);
+        g[d[i].S].pb(lev[d[i].F-1].back());
+        lev[d[i].F].pb(d[i].S);
+        ans.pb(mp(lev[d[i].F-1].back(),d[i].S));
     }
-
+    cout << ans.size() << "\n";
+    for(auto &i: ans)cout << i.F << " " << i.S << "\n";
    return 0;
 }

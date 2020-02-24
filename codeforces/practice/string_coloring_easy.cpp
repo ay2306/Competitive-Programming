@@ -47,41 +47,23 @@ const double pi = acos(-1);
 int main(){
     int n;
     cin >> n;
-    V<PII> ans;
-    loop(i,0,3){
-        string a;
-        cin >> a;
-        int mx = 0;
-        unordered_map<int,int> m;
-        for(auto &j: a){
-            m[j]++;
+    string s;
+    cin >> s;
+    string ans = "";
+    char lst0 = 'a', lst1 = 'a';
+    loop(i,0,n){
+        if(s[i] >= lst0){
+            ans+="0";
+            lst0=s[i];
         }
-        if(n == 1 && m.size() == 1){
-            mx = a.size()-1;
+        else if(s[i] >= lst1){
+            ans+="1";
+            lst1=s[i];
         }else{
-            for(auto &j: m){
-                int rem = a.size()-j.S;
-                if(rem >= n){
-                    mx=max(mx,n+j.S);
-
-                }else{
-                    mx = max(mx,int(a.size()));
-                }
-            }
-        }
-        ans.emplace_back(mx,i);
-    }
-    // for(auto &i: ans)printf("per = %d, cost = %d\n",i.S,i.F);
-    sort(all(ans));
-    if(ans[1].F == ans[2].F)cout << "Draw";
-    else{
-        switch (ans[2].S)
-        {
-            case 0: cout << "Kuro"; break;
-            case 1: cout << "Shiro"; break;
-            case 2: cout << "Katie"; break;
+            cout << "NO\n";
+            return 0;
         }
     }
-
+    cout << "YES\n" << ans;
    return 0;
 }

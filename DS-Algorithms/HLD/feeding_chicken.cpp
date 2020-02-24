@@ -43,45 +43,57 @@ using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_
 const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
+V<string> arr;
+int n,m,k;
 
-int main(){
-    int n;
-    cin >> n;
-    V<PII> ans;
-    loop(i,0,3){
-        string a;
-        cin >> a;
-        int mx = 0;
-        unordered_map<int,int> m;
-        for(auto &j: a){
-            m[j]++;
-        }
-        if(n == 1 && m.size() == 1){
-            mx = a.size()-1;
-        }else{
-            for(auto &j: m){
-                int rem = a.size()-j.S;
-                if(rem >= n){
-                    mx=max(mx,n+j.S);
+void dfs(int i, int j, char &a){
+    if(i < 0 || j < 0 || i >= n || j >= m || arr[i][j] != '.')return;
+    arr[i][j]=a;
+    dfs(i-1,j,a);
+    dfs(i+1,j,a);
+    dfs(i,j-1,a);
+    dfs(i,j+1,a);
+}
 
-                }else{
-                    mx = max(mx,int(a.size()));
-                }
+void solve(){
+    cin >> n >> m >> k;
+    arr=V<string> (n);
+    loop(i,0,n)cin >> arr[i];
+    int cnt = 0;
+    loop(i,0,n)loop(j,0,m)cnt+=arr[i][j]=='R';
+    int mn = cnt/k;
+    int mx = mn + (cnt%k != 0);
+    int mxi = cnt%k;
+    int mni = k-(cnt%k);
+    stack<char> op;
+    for(char i = '0'; i <= '9'; ++i)op.push(i);
+    for(char i = 'a'; i <= 'z'; ++i)op.push(i);
+    for(char i = 'A'; i <= 'Z'; ++i)op.push(i);
+    vector<P<char,int>> q;
+    loop(i,0,mxi){
+        q.emplace_back(op.top(),mx);
+        op.pop();
+    }
+    loop(i,0,mni){
+        q.emplace_back(op.top(),mn);
+        op.pop();
+    }
+    loop(i,0,n){
+        loop(j,0,m){
+            if(arr[i][j] == 'R'){
+                arr[i][j] = q[0].F;
+                q[0].S--;
+                if(q[0].S)q.erase(q.begin());
             }
         }
-        ans.emplace_back(mx,i);
     }
-    // for(auto &i: ans)printf("per = %d, cost = %d\n",i.S,i.F);
-    sort(all(ans));
-    if(ans[1].F == ans[2].F)cout << "Draw";
-    else{
-        switch (ans[2].S)
-        {
-            case 0: cout << "Kuro"; break;
-            case 1: cout << "Shiro"; break;
-            case 2: cout << "Katie"; break;
-        }
-    }
+    loop(i,0,n)loop(j,0,m)if(arr[i][j]!='.')dfs(i,j,arr[i][j]);
+    loop(i,0,n)cout << arr[i] << "\n";
+}
 
+int main(){
+    int t;
+    cin >> t;
+    while(t--)solve();
    return 0;
 }

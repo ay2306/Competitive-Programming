@@ -45,43 +45,21 @@ const ll inf = 1e9;
 const double pi = acos(-1);
 
 int main(){
-    int n;
-    cin >> n;
-    V<PII> ans;
-    loop(i,0,3){
-        string a;
-        cin >> a;
-        int mx = 0;
-        unordered_map<int,int> m;
-        for(auto &j: a){
-            m[j]++;
+    int n,k,p;
+    cin >> n >> k >> p;
+    ll ans = LLONG_MAX;
+    V<ll> a(n),b(k);
+    loop(i,0,n)cin >> a[i];
+    loop(i,0,k)cin >> b[i];
+    sort(all(a));
+    sort(all(b));
+    for(int i = 0; i+n-1 < k; ++i){
+        ll cst = LLONG_MIN;
+        loop(j,0,n){
+            cst=max(abs(a[j]-b[i+j])+abs(p-b[i+j]),cst);
         }
-        if(n == 1 && m.size() == 1){
-            mx = a.size()-1;
-        }else{
-            for(auto &j: m){
-                int rem = a.size()-j.S;
-                if(rem >= n){
-                    mx=max(mx,n+j.S);
-
-                }else{
-                    mx = max(mx,int(a.size()));
-                }
-            }
-        }
-        ans.emplace_back(mx,i);
+        ans = min(ans,cst);
     }
-    // for(auto &i: ans)printf("per = %d, cost = %d\n",i.S,i.F);
-    sort(all(ans));
-    if(ans[1].F == ans[2].F)cout << "Draw";
-    else{
-        switch (ans[2].S)
-        {
-            case 0: cout << "Kuro"; break;
-            case 1: cout << "Shiro"; break;
-            case 2: cout << "Katie"; break;
-        }
-    }
-
+    cout << ans;
    return 0;
 }

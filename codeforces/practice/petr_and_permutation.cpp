@@ -40,48 +40,23 @@ using namespace std;
 using namespace __gnu_pbds;
 template <typename T>
 using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-const ll maxn = 1e5;
+const ll maxn = 1e6+10;
 const ll inf = 1e9;
 const double pi = acos(-1);
-
+int a[maxn];
 int main(){
     int n;
-    cin >> n;
-    V<PII> ans;
-    loop(i,0,3){
-        string a;
-        cin >> a;
-        int mx = 0;
-        unordered_map<int,int> m;
-        for(auto &j: a){
-            m[j]++;
-        }
-        if(n == 1 && m.size() == 1){
-            mx = a.size()-1;
-        }else{
-            for(auto &j: m){
-                int rem = a.size()-j.S;
-                if(rem >= n){
-                    mx=max(mx,n+j.S);
-
-                }else{
-                    mx = max(mx,int(a.size()));
-                }
-            }
-        }
-        ans.emplace_back(mx,i);
+    scanf("%d",&n);
+    ll ans = 0;
+    ord_set<int> s;
+    loop(i,0,n){
+        scanf("%d",a+i);
     }
-    // for(auto &i: ans)printf("per = %d, cost = %d\n",i.S,i.F);
-    sort(all(ans));
-    if(ans[1].F == ans[2].F)cout << "Draw";
-    else{
-        switch (ans[2].S)
-        {
-            case 0: cout << "Kuro"; break;
-            case 1: cout << "Shiro"; break;
-            case 2: cout << "Katie"; break;
-        }
+    loopr(i,n-1,0){
+        s.insert(a[i]);
+        ans+=s.order_of_key(a[i]);
     }
-
+    if(ans%2 == n%2)cout << "Petr";
+    else cout << "Um_nik";
    return 0;
 }

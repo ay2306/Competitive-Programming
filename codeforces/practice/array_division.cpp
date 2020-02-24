@@ -47,41 +47,29 @@ const double pi = acos(-1);
 int main(){
     int n;
     cin >> n;
-    V<PII> ans;
-    loop(i,0,3){
-        string a;
-        cin >> a;
-        int mx = 0;
-        unordered_map<int,int> m;
-        for(auto &j: a){
-            m[j]++;
-        }
-        if(n == 1 && m.size() == 1){
-            mx = a.size()-1;
-        }else{
-            for(auto &j: m){
-                int rem = a.size()-j.S;
-                if(rem >= n){
-                    mx=max(mx,n+j.S);
-
-                }else{
-                    mx = max(mx,int(a.size()));
-                }
-            }
-        }
-        ans.emplace_back(mx,i);
+    V<int> a(n);
+    ll s = 0,diff;
+    loop(i,0,n)cin >> a[i],s+=a[i];
+    if(s%2 || n == 1)return cout << "NO\n",0;
+    s>>=1;
+    multiset<ll> m;
+    m.insert(0);
+    ll c = 0;
+    loop(i,0,n){
+        m.insert(a[i]);
+        c+=a[i];
+        diff=c-s;
+        if(m.find(diff) != m.end())return cout << "YES\n",0;
     }
-    // for(auto &i: ans)printf("per = %d, cost = %d\n",i.S,i.F);
-    sort(all(ans));
-    if(ans[1].F == ans[2].F)cout << "Draw";
-    else{
-        switch (ans[2].S)
-        {
-            case 0: cout << "Kuro"; break;
-            case 1: cout << "Shiro"; break;
-            case 2: cout << "Katie"; break;
-        }
+    m.clear();
+    m.insert(0);
+    c = 0;
+    loopr(i,n-1,0){
+        m.insert(a[i]);
+        c+=a[i];
+        diff=c-s;
+        if(m.find(diff) != m.end())return cout << "YES\n",0;
     }
-
+    cout << "NO\n";
    return 0;
 }

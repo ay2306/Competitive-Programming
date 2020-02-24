@@ -40,21 +40,21 @@ using namespace std;
 using namespace __gnu_pbds;
 template <typename T>
 using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-const ll N = 1e5+10;
+const ll N = 5e4 + 50;
 const ll inf = 1e9;
 const double pi = acos(-1);
-int maxi[20][N],mini[20][N],dp[20][N];
-V<PII> g[N];
-int lev[N];
+int dp[20][N];
+ll level[N];
+ll lev[N];
+V<P<ll,int>> g[N];
 int n;
-
-void dfs(int s = 1, int p = 0){
-    if(p == 0)lev[s] = 0;
-    else lev[s] = lev[p] + 1;
+void dfs(int s, int p){
+    if(p == -1)level[s] = 0,lev[s]=0;
+    else level[s] = level[p]+1;
     dp[0][s] = p;
     for(auto &i: g[s]){
         if(i.S != p){
-            mini[0][i.S] = maxi[0][i.S] = i.F;
+            lev[i.S] = lev[s]+i.F;
             dfs(i.S,s);
         }
     }
@@ -62,62 +62,42 @@ void dfs(int s = 1, int p = 0){
 
 void pre(){
     loop(i,1,20){
-        loop(j,1,n+1){
-            dp[i][j] = dp[i-1][dp[i-1][j]];
-            maxi[i][j] = max(maxi[i-1][j],maxi[i-1][dp[i-1][j]]);
-            mini[i][j] = min(mini[i-1][j],mini[i-1][dp[i-1][j]]);
+        loop(j,0,n){
+            if(dp[i-1][j] == -1)dp[i][j]=-1;
+            else dp[i][j] = dp[i-1][dp[i-1][j]];
         }
     }
 }
 
 int lca(int a, int b){
-    if(lev[b] < lev[a])swap(a,b);
-    int diff = lev[b] - lev[a];
-    loop(i,0,20)if((diff >> i)&1)b=dp[i][b];
-    if(a == b)return a;
-    loopr(i,19,0)if(dp[i][a] != dp[i][b])b=dp[i][b],a=dp[i][a];
+    if(level[a] > level[b])swap(a,b);
+    int diff = level[b] - level[a];
+    loop(i,0,20)if((diff>>i)&1)b=dp[i][b];
+    if(a == b)return b;
+    loopr(i,19,0)if(dp[i][a] != dp[i][b])a=dp[i][a],b=dp[i][b];
     return dp[0][a];
 }
 
-int mn(int a, int b){
-    int ans = INT_MAX;
-    if(lev[b] < lev[a])swap(a,b);
-    int diff = lev[b] - lev[a];
-    loop(i,0,20)if((diff >> i)&1){ans=min(ans,mini[i][b]);b=dp[i][b];}
-    return ans;
+int distance(int a, int b){
+    return lev[a]+lev[b]-2*lev[lca(a,b)];
 }
-
-int mx(int a, int b){
-    int ans = 0;
-    if(lev[b] < lev[a])swap(a,b);
-    int diff = lev[b] - lev[a];
-    loop(i,0,20)if((diff >> i)&1){ans=max(ans,maxi[i][b]);b=dp[i][b];}
-    return ans;
-}
-
 
 int main(){
-    scanf("%d",&n);
+    cin >> n;
     loop(i,1,n){
         int a,b,c;
-        scanf("%d%d%d",&a,&b,&c);
-        g[a].pb(mp(c,b));
-        g[b].pb(mp(c,a));
+        cin >> a >> b >> c;
+        g[a].pb({c,b});
+        g[b].pb({c,a});
     }
-    loop(i,0,20)loop(j,0,N)maxi[i][j]=0,mini[i][j]=INT_MAX,dp[i][j]=0;
-    dfs();
+    dfs(0,-1);
     pre();
     int q;
-    scanf("%d",&q);
+    cin >> q;
     while(q--){
         int a,b;
-        scanf("%d%d",&a,&b);
-        int l = lca(a,b);
-        if(l == a || l == b){
-            printf("%d %d\n",mn(a,b),mx(a,b));
-        }else{
-            printf("%d %d\n",min(mn(a,l),mn(b,l)),max(mx(a,l),mx(b,l)));
-        }
+        cin >> a >> b;
+        cout << distance(a,b) << "\n";
     }
    return 0;
 }

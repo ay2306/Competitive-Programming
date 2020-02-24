@@ -1,45 +1,43 @@
 #include <bits/stdc++.h>
+//For ordered_set
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+#define MOD 1000000007
+#define test int t; cin>>t; while(t--)
+#define loop(i,a,b) for(int i=a;i<b;i++)
+#define loopr(i,a,b) for(int i=a;i>=b;i--)
+#define loops(i,a,b,step) for(int i=a;i<b;i+=step)
+#define looprs(i,a,b,step) for(int i=a;i>=b;i-=step)
+#define ull unsigned long long int
+#define ll long long int
+#define P pair
+#define PLL pair<long long, long long>
+#define PII pair<int, int>
+#define PUU pair<unsigned long long int, unsigned long long int>
+#define L list
+#define V vector
+#define D deque
+#define ST set
+#define MS multiset
+#define M map
+#define UM unordered_map
+#define mp make_pair
+#define pb push_back
+#define pf push_front
+#define MM multimap
+#define F first
+#define S second
+#define IT iterator
+#define RIT reverse_iterator
+#define FAST ios_base::sync_with_stdio(false);cin.tie();cout.tie();
+#define FILE_READ_IN freopen("input.txt","r",stdin);
+#define FILE_READ_OUT freopen("output.txt","w",stdout);
+#define all(a) a.begin(),a.end()
+#define ld long double
 using namespace std;
-typedef long long int ll;
-const ll inf = 1e9+7;
-const int N = 1e5+10;
-
-int pr[N];
-
-ll power(ll a, ll n){
-    if(n == 0)return 1;
-    if(n == 1)return a;
-    ll p = power(a,n>>1);
-    p*=p;
-    if(p >= inf)p%=inf;
-    if(n&1){
-        p*=a;
-        if(p >= inf)p%=inf;
-    }
-    return p;
-}
-
-void pre(){
-    for(int i = 2; i < N; ++i){
-        if(pr[i] == 0){
-            for(int j = i; j < N; j+=i)pr[j]=i;
-        }
-    }
-}
-
-ll Ans(ll g){
-    unordered_map<int,int> m;
-    if(g==1)return -1;
-    while(g > 1){
-        m[pr[g]]++;
-        g/=pr[g];
-    }
-    ll num = m.size();
-    ll denom = 1;
-    for(auto &i: m)denom*=(i.second+1);
-    denom--;
-    return (num*power(denom,inf-2))%inf;
-}
+const ll maxn = 1e5;
+const ll inf = 1e9;
+const double pi = acos(-1);
 
 template<class T, int SZ>
 struct segmentTree{
@@ -49,18 +47,18 @@ struct segmentTree{
         memset(lazy,0,sizeof(lazy));
     }
     void push(int node, int l, int r){
-        sum[node]+=lazy[node];
+        sum[node]+=(r-l+1)*lazy[node];
         if(l != r)lazy[2*node]+=lazy[node],lazy[2*node+1]+=lazy[node];
         lazy[node] = 0;
     }
     void pull(int node, int l, int r){
-        if(l!=r)sum[node] = __gcd(sum[node*2],sum[node*2 + 1]);
+        if(l!=r)sum[node] = sum[node*2]+sum[node*2 + 1];
     }
     void update(int l, int r, T val, int node = 1, int start = 0, int end = SZ-1){
         push(node,start,end);
         if(l > end || r < start)return;
         if(l <= start && end <= r){
-            sum[node] = val;
+            lazy[node] = val;
             push(node,start,end);
             return;
         }
@@ -71,12 +69,12 @@ struct segmentTree{
     }
     T query(int l, int r, int node = 1, int start = 0, int end = SZ-1){
         push(node,start,end);
-        if(l > end || r < start)return INT_MIN;
+        if(l > end || r < start)return 0;
         if(l <= start && end <= r){
             return sum[node];
         }
         int mid = start+end>>1;
-        return max(query(l,r,node*2,start,mid) , query(l,r,node*2+1,mid+1,end));
+        return query(l,r,node*2,start,mid) + query(l,r,node*2+1,mid+1,end);
     }
 };
 
@@ -135,34 +133,30 @@ template<int SZ, bool VALS_IN_EDGES> struct HLD{
         tree.update(pos[v]+VALS_IN_EDGES,pos[v]+VALS_IN_EDGES,val);
     }
     ll queryPath(int u, int v){
-        ll res = INT_MIN;
+        ll res = 0;
         processPath(u,v,[this,&res](int l, int r){
             if(r < l)swap(r,l);
-            res=max(res,tree.query(l,r));
+            res=res+tree.query(l,r);
         });
         return res;
     }
 };
 
 int main(){
+    const int N = 100010;
+    HLD<N,true> hld;
+    V<PII> ed;
     int n;
     cin >> n;
-    const int N = 100010;
-    HLD<N,false> hld;
-    for(int i = 1; i < n; ++i){int a,b;cin >> a >> b;hld.addEdge(a,b);}
+    for(int i = 1; i < n; ++i){int a,b;cin >> a >> b;hld.addEdge(a,b);ed.emplace_back(a,b);}
     hld.init(N);
-    int q;
-    cin >> q;
-    ll e,f;
-    string a;
-    while(q--){
-        cin >> a;
-        cin >> e >> f;
-        if(a[0] == 'a'){
-            hld.modifySubtree(e,f);
-        }else{
-            cout << hld.queryPath(e,f) << "\n";
-        }
+    int k;
+    cin >> k;
+    while(k--){
+        int a,b;
+        cin >> a >> b;
+        hld.modifyPath(a,b,1);
     }
+    for(auto &i: ed)cout << hld.queryPath(i.F,i.S) << " ";
     return 0;
 }

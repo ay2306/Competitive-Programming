@@ -1,3 +1,4 @@
+// *  Code idea from "MZuenni"
 #include <bits/stdc++.h>
 //For ordered_set
 #include <ext/pb_ds/assoc_container.hpp>
@@ -43,45 +44,31 @@ using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_
 const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
+map<PII,int> v;
+int n,m;
+V<V<bool>> ok;
+
+bool dfs(int i = 0, int j = 0){
+    if(i >= n || j >= m || !ok[i][j])return false;
+    if(i == n-1 && j == m-1)return true;
+    ok[i][j] = false;
+    if(dfs(i+1,j))return true;
+    if(dfs(i,j+1))return true;
+    return false;
+}
 
 int main(){
-    int n;
-    cin >> n;
-    V<PII> ans;
-    loop(i,0,3){
-        string a;
-        cin >> a;
-        int mx = 0;
-        unordered_map<int,int> m;
-        for(auto &j: a){
-            m[j]++;
-        }
-        if(n == 1 && m.size() == 1){
-            mx = a.size()-1;
-        }else{
-            for(auto &j: m){
-                int rem = a.size()-j.S;
-                if(rem >= n){
-                    mx=max(mx,n+j.S);
-
-                }else{
-                    mx = max(mx,int(a.size()));
-                }
-            }
-        }
-        ans.emplace_back(mx,i);
+    cin >> n >> m;
+    V<string> arr(n);
+    loop(i,0,n)cin >> arr[i];
+    ok.assign(n,V<bool>(m,false));
+    loop(i,0,n)loop(j,0,m)ok[i][j]=arr[i][j]=='.';
+    int res = 0;
+    while(dfs()){
+        ++res;
+        ok[0][0] = true;
+        ok[n-1][m-1] = true;
     }
-    // for(auto &i: ans)printf("per = %d, cost = %d\n",i.S,i.F);
-    sort(all(ans));
-    if(ans[1].F == ans[2].F)cout << "Draw";
-    else{
-        switch (ans[2].S)
-        {
-            case 0: cout << "Kuro"; break;
-            case 1: cout << "Shiro"; break;
-            case 2: cout << "Katie"; break;
-        }
-    }
-
+    cout << res;
    return 0;
 }

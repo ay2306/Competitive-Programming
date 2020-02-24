@@ -43,45 +43,21 @@ using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_
 const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
-
+int dp[2010][5];
+// * Not that answer will always be of form 111.... (2222 ... 1111.....) 2222.....
+// * With Data is bracket being shifted
+// * So if we choose a subarray L,R then Longest non-increasing subsequence is the answer + 1'S LEFT and 2'S RIGHT
+// * let dp[i][j] = Longest non-increasing subsequence if starting from j
+int a[2010],b[]={0,1,2,1,2};
 int main(){
     int n;
-    cin >> n;
-    V<PII> ans;
-    loop(i,0,3){
-        string a;
-        cin >> a;
-        int mx = 0;
-        unordered_map<int,int> m;
-        for(auto &j: a){
-            m[j]++;
-        }
-        if(n == 1 && m.size() == 1){
-            mx = a.size()-1;
-        }else{
-            for(auto &j: m){
-                int rem = a.size()-j.S;
-                if(rem >= n){
-                    mx=max(mx,n+j.S);
-
-                }else{
-                    mx = max(mx,int(a.size()));
-                }
-            }
-        }
-        ans.emplace_back(mx,i);
+    scanf("%d",&n);
+    loop(i,1,n+1){
+        scanf("%d",a+i);
     }
-    // for(auto &i: ans)printf("per = %d, cost = %d\n",i.S,i.F);
-    sort(all(ans));
-    if(ans[1].F == ans[2].F)cout << "Draw";
-    else{
-        switch (ans[2].S)
-        {
-            case 0: cout << "Kuro"; break;
-            case 1: cout << "Shiro"; break;
-            case 2: cout << "Katie"; break;
-        }
+    loop(j,1,5){
+        loop(i,1,n+1)dp[i][j] = max(dp[i][j-1],dp[i-1][j]+(a[i]==b[j]));
     }
-
+    cout << dp[n][4];
    return 0;
 }

@@ -47,41 +47,43 @@ const double pi = acos(-1);
 int main(){
     int n;
     cin >> n;
-    V<PII> ans;
-    loop(i,0,3){
-        string a;
-        cin >> a;
-        int mx = 0;
-        unordered_map<int,int> m;
-        for(auto &j: a){
-            m[j]++;
+    V<PLL> arr(n);
+    loop(i,0,n)cin >> arr[i].F;
+    loop(i,0,n)cin >> arr[i].S;
+    sort(all(arr),greater<PLL>());
+    map<ll,ll> e;
+    loop(i,0,n)e[arr[i].S]++;
+    ll ans = LLONG_MAX;
+    ll s = 0;
+    int i = 0;
+    while(i < n){
+        ll cnt = 0;
+        ll thispower = 0;
+        ll cur = arr[i].F;
+        while(arr[i].F==cur){
+            thispower+=arr[i].S;
+            e[arr[i].S]--;
+            cnt++;
+            i++;
         }
-        if(n == 1 && m.size() == 1){
-            mx = a.size()-1;
-        }else{
-            for(auto &j: m){
-                int rem = a.size()-j.S;
-                if(rem >= n){
-                    mx=max(mx,n+j.S);
-
-                }else{
-                    mx = max(mx,int(a.size()));
-                }
+        ll power = 0;
+        ll rst = n-i;
+        ll req = cnt/2 - (cnt%2==0);
+        ll to_del = max(0LL,rst-req);
+        for(auto &j: e){
+            if(to_del == 0)break;
+            if(j.S >= to_del){
+                power+=(to_del*j.F);
+                to_del = 0;
+                break;
+            }else{
+                power+=(j.S*j.F);
+                to_del -= j.S;
             }
         }
-        ans.emplace_back(mx,i);
+        ans = min(ans,s+power);
+        s=thispower;
     }
-    // for(auto &i: ans)printf("per = %d, cost = %d\n",i.S,i.F);
-    sort(all(ans));
-    if(ans[1].F == ans[2].F)cout << "Draw";
-    else{
-        switch (ans[2].S)
-        {
-            case 0: cout << "Kuro"; break;
-            case 1: cout << "Shiro"; break;
-            case 2: cout << "Katie"; break;
-        }
-    }
-
+    cout << ans << "\n";
    return 0;
 }

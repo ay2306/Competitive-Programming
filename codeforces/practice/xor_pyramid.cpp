@@ -44,44 +44,64 @@ const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
 
+// unordered_map<int,vector<int>> m;
+
+// void checking(vector<vector<int>> &a){
+//     if(a.size() == 1){
+//         for(auto &i: a[0])cout << i << " ";
+//         cout << "\n";
+//         return;
+//     }
+//     int i = 1;
+//     vector<vector<int>> arr;
+//     while(i < a.size()){
+//         map<int,int> m;
+//         for(auto &j: a[i-1])m[j]++;
+//         for(auto &j: a[i])m[j]++;
+//         vector<int> k;
+//         for(auto &j: m)if(j.second & 1)k.emplace_back(j.first);
+//         arr.emplace_back(k);
+//         i++;
+//     }
+//     checking(arr);
+// }
+
+// void brute_check(int n){
+//     vector<vector<int>> arr;
+//     loop(i,1,n+1)arr.emplace_back(vector<int>(1,i));
+//     checking(arr);
+// }
+
+const int N = 5010;
+
+ll dp[N][N];
+ll a[N];
 int main(){
+    FAST
+    // FILE_READ_OUT
     int n;
     cin >> n;
-    V<PII> ans;
-    loop(i,0,3){
-        string a;
-        cin >> a;
-        int mx = 0;
-        unordered_map<int,int> m;
-        for(auto &j: a){
-            m[j]++;
-        }
-        if(n == 1 && m.size() == 1){
-            mx = a.size()-1;
-        }else{
-            for(auto &j: m){
-                int rem = a.size()-j.S;
-                if(rem >= n){
-                    mx=max(mx,n+j.S);
-
-                }else{
-                    mx = max(mx,int(a.size()));
-                }
-            }
-        }
-        ans.emplace_back(mx,i);
+    loop(i,0,n)cin >> a[i];
+    // brute_check(n);
+    loop(i,0,n){
+        dp[0][i] = a[i];
     }
-    // for(auto &i: ans)printf("per = %d, cost = %d\n",i.S,i.F);
-    sort(all(ans));
-    if(ans[1].F == ans[2].F)cout << "Draw";
-    else{
-        switch (ans[2].S)
-        {
-            case 0: cout << "Kuro"; break;
-            case 1: cout << "Shiro"; break;
-            case 2: cout << "Katie"; break;
+    loop(i,1,n){
+        loop(j,0,n-i+1){
+            dp[i][j] = dp[i-1][j+1] ^ dp[i-1][j];
         }
     }
-
+    loop(i,1,n){
+        loop(j,0,n-i+1){
+            dp[i][j] = max({dp[i][j],dp[i-1][j+1],dp[i-1][j]});
+        }
+    }
+    int q;
+    cin >> q;
+    while(q--){
+        int l,r;
+        cin >> l >> r;
+        cout << dp[r-l][l-1] << "\n";
+    }
    return 0;
 }

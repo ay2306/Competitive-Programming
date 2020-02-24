@@ -37,51 +37,41 @@
 #define ld long double
 using namespace std;
 // For ordered_set
-using namespace __gnu_pbds;
-template <typename T>
-using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-const ll maxn = 1e5;
+// using namespace __gnu_pbds;
+// template <typename T>
+// using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
+const ll N = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
-
+ll a[N];
+ll dc[N],inc[N];
+ll ad[N],ai[N];
 int main(){
-    int n;
-    cin >> n;
-    V<PII> ans;
-    loop(i,0,3){
-        string a;
-        cin >> a;
-        int mx = 0;
-        unordered_map<int,int> m;
-        for(auto &j: a){
-            m[j]++;
-        }
-        if(n == 1 && m.size() == 1){
-            mx = a.size()-1;
-        }else{
-            for(auto &j: m){
-                int rem = a.size()-j.S;
-                if(rem >= n){
-                    mx=max(mx,n+j.S);
-
-                }else{
-                    mx = max(mx,int(a.size()));
-                }
-            }
-        }
-        ans.emplace_back(mx,i);
-    }
-    // for(auto &i: ans)printf("per = %d, cost = %d\n",i.S,i.F);
-    sort(all(ans));
-    if(ans[1].F == ans[2].F)cout << "Draw";
-    else{
-        switch (ans[2].S)
-        {
-            case 0: cout << "Kuro"; break;
-            case 1: cout << "Shiro"; break;
-            case 2: cout << "Katie"; break;
-        }
-    }
-
+   int n;
+   cin >> n;
+   loop(i,0,n){cin >> a[i];ai[i]=a[i],ad[i]=a[i];}
+   loopr(i,n-2,0){
+      if(ai[i] > ai[i+1])ai[i]=ai[i+1];
+   }
+   loop(i,1,n){
+      if(ad[i] > ad[i-1])ad[i]=ad[i-1];
+   }
+   dc[0] = ad[0];
+   inc[0] = ai[0];
+   loop(i,1,n){
+      inc[i]=inc[i-1]+ai[i];
+      dc[i]=dc[i-1]+ad[i];
+   }
+   int mxj = 0;
+   ll mx = 0;
+   loop(i,0,n){
+      ll maxi = a[i];
+      if(i-1 >= 0)maxi+=inc[i-1];
+      if(i+1 < n)maxi+=dc[i+1];
+      if(maxi > mx)mx=maxi,mxj=i;
+   }
+   loop(i,0,mxj)cout << ai[i] << " ";
+   cout << a[mxj] << " ";
+   loop(i,mxj+1,n)cout << ad[i] << " ";
    return 0;
 }

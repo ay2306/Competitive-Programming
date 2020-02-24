@@ -40,48 +40,72 @@ using namespace std;
 using namespace __gnu_pbds;
 template <typename T>
 using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-const ll maxn = 1e5;
+const ll N = 2e5+100;
 const ll inf = 1e9;
 const double pi = acos(-1);
+int p[N];
+int n;
+unordered_map<string,int> str;
+int fp(int x){
+    if(x != p[x])p[x]=fp(p[x]);
+    return p[x];
+}
+
+void un(int a, int b){
+    p[fp(a)] = fp(b);
+}
+
 
 int main(){
-    int n;
-    cin >> n;
-    V<PII> ans;
-    loop(i,0,3){
+    FAST
+    int m,q;
+    cin >> n >> m >> q;
+    loop(i,0,2*n+40){
+        p[i] = i;
+    }
+    loop(i,1,n+1){
         string a;
         cin >> a;
-        int mx = 0;
-        unordered_map<int,int> m;
-        for(auto &j: a){
-            m[j]++;
-        }
-        if(n == 1 && m.size() == 1){
-            mx = a.size()-1;
-        }else{
-            for(auto &j: m){
-                int rem = a.size()-j.S;
-                if(rem >= n){
-                    mx=max(mx,n+j.S);
-
-                }else{
-                    mx = max(mx,int(a.size()));
-                }
+        str[a] = i;
+    }
+    while(m--){
+        int a;
+        cin >> a;
+        string b,c;
+        cin >> b >> c;
+        int i = str[b];
+        int j = str[c];
+        if(a == 1){
+            if(fp(i)==fp(j+n) || fp(j) == fp(i+n)){
+                cout << "NO\n";
+            }else{
+                cout << "YES\n";
+                un(i,j);
+                un(i+n,j+n);
             }
         }
-        ans.emplace_back(mx,i);
-    }
-    // for(auto &i: ans)printf("per = %d, cost = %d\n",i.S,i.F);
-    sort(all(ans));
-    if(ans[1].F == ans[2].F)cout << "Draw";
-    else{
-        switch (ans[2].S)
-        {
-            case 0: cout << "Kuro"; break;
-            case 1: cout << "Shiro"; break;
-            case 2: cout << "Katie"; break;
+        else {
+            if(fp(i)==fp(j) || fp(j+n) == fp(i+n)){
+                cout << "NO\n";
+            }else{
+                cout << "YES\n";
+                un(i,j+n);
+                un(i+n,j);
+            }
         }
     }
-
+    while(q--){
+        string a,b;
+        cin >> a >> b;
+        int i = str[a];
+        int j = str[b];
+        if(fp(i) == fp(j)){
+            cout << "1\n";
+        }else if(fp(i) == fp(j+n)){
+            cout << "2\n";
+        }else{
+            cout << "3\n";
+        }
+    }
    return 0;
 }

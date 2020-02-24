@@ -45,43 +45,54 @@ const ll inf = 1e9;
 const double pi = acos(-1);
 
 int main(){
-    int n;
-    cin >> n;
-    V<PII> ans;
-    loop(i,0,3){
-        string a;
-        cin >> a;
-        int mx = 0;
-        unordered_map<int,int> m;
-        for(auto &j: a){
-            m[j]++;
+    map<int,V<int>> m;
+    int arr[4] = {1,6,8,9};
+    do{
+        int k = 0;
+        loop(i,0,4)k=(k*10+arr[i]);
+        if(m.find(k%7) == m.end()){
+            V<int> a;
+            loop(i,0,4)a.emplace_back(arr[i]);
+            m[k%7]=a;
         }
-        if(n == 1 && m.size() == 1){
-            mx = a.size()-1;
-        }else{
-            for(auto &j: m){
-                int rem = a.size()-j.S;
-                if(rem >= n){
-                    mx=max(mx,n+j.S);
-
-                }else{
-                    mx = max(mx,int(a.size()));
-                }
-            }
-        }
-        ans.emplace_back(mx,i);
+        if(m.size() == 7)break;
+    }while(next_permutation(arr,arr+4));
+    string a;
+    cin >> a;
+    int c = 0;
+    map<char,int> m1;
+    for(auto &i: a)m1[i]++;
+    c=m1['0'];
+    m1.erase(m1.find('0'));
+    m1['1']--;
+    m1['6']--;
+    m1['8']--;
+    m1['9']--;
+    string ans = "";
+    V<int> p(a.size(),1);
+    loop(i,1,a.size()){
+        p[i]=p[i-1]*3;
+        p[i]%=7;
     }
-    // for(auto &i: ans)printf("per = %d, cost = %d\n",i.S,i.F);
-    sort(all(ans));
-    if(ans[1].F == ans[2].F)cout << "Draw";
-    else{
-        switch (ans[2].S)
-        {
-            case 0: cout << "Kuro"; break;
-            case 1: cout << "Shiro"; break;
-            case 2: cout << "Katie"; break;
+    int md = 0;
+    int j = 0;
+    reverse(all(p));
+    for(auto &i: m1){
+        loop(k,0,i.S){
+            ans+=i.F;
+            md+=((p[j++]*(i.F-'0'))%7);
+            md%=7;
         }
     }
-
+    // cout << md << "\n";
+    md = (7-md)%7;
+    if(ans.size() == 0){
+        for(auto &i: m[md])ans+=char(i+'0');
+        while(c--)ans+="0";
+    }else{
+        while(c--)ans+="0";
+        for(auto &i: m[md])ans+=char(i+'0');
+    }
+    cout << ans;
    return 0;
 }

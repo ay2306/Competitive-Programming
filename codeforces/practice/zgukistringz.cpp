@@ -45,43 +45,26 @@ const ll inf = 1e9;
 const double pi = acos(-1);
 
 int main(){
-    int n;
-    cin >> n;
-    V<PII> ans;
-    loop(i,0,3){
-        string a;
-        cin >> a;
-        int mx = 0;
-        unordered_map<int,int> m;
-        for(auto &j: a){
-            m[j]++;
-        }
-        if(n == 1 && m.size() == 1){
-            mx = a.size()-1;
-        }else{
-            for(auto &j: m){
-                int rem = a.size()-j.S;
-                if(rem >= n){
-                    mx=max(mx,n+j.S);
-
-                }else{
-                    mx = max(mx,int(a.size()));
-                }
-            }
-        }
-        ans.emplace_back(mx,i);
+    FAST
+    string a[3];
+    loop(i,0,3)cin >> a[i];
+    unordered_map<char,int> m[3];
+    loop(j,0,3)for(auto &i: a[j])m[j][i]++;
+    PII ans = {0,0};
+    loop(b,0,a[0].length()+1){
+        bool imp = true;
+        int a_min = a[0].length();
+        for(auto &i: m[1])imp=(imp&&(m[0][i.F]-(i.S*b) >= 0));
+        for(auto &i: m[2])a_min=min(a_min,max(0,(m[0][i.F]-(m[1][i.F]*b))/i.S));
+        if(imp && a_min+b > ans.F+ans.S)ans={b,a_min};
+        if(!imp)break;
     }
-    // for(auto &i: ans)printf("per = %d, cost = %d\n",i.S,i.F);
-    sort(all(ans));
-    if(ans[1].F == ans[2].F)cout << "Draw";
-    else{
-        switch (ans[2].S)
-        {
-            case 0: cout << "Kuro"; break;
-            case 1: cout << "Shiro"; break;
-            case 2: cout << "Katie"; break;
-        }
-    }
-
+    // cout << ans.F << " " << ans.S << "\n";
+    for(auto &i: m[1])m[0][i.F]-=(ans.F*i.S);
+    for(auto &i: m[2])m[0][i.F]-=(ans.S*i.S);
+    string ans1 = "";
+    loop(i,0,ans.F)cout << a[1];
+    loop(i,0,ans.S)cout << a[2];
+    for(auto &i: m[0])cout << string(i.S,i.F);
    return 0;
 }

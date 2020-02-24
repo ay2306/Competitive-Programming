@@ -43,45 +43,51 @@ using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_
 const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
+V<string> arr;
+int n,m,k;
+
+void dfs(int i, int j, char &a){
+    if(i < 0 || j < 0 || i >= n || j >= m || arr[i][j] != '.')return;
+    arr[i][j]=a;
+    dfs(i-1,j,a);
+    dfs(i+1,j,a);
+    dfs(i,j-1,a);
+    dfs(i,j+1,a);
+}
+
+
+void solve(){
+    cin >> n >> m >> k;
+    arr=V<string> (n);
+    loop(i,0,n)cin >> arr[i];
+    int cnt = 0;
+    loop(i,0,n)loop(j,0,m)cnt+=arr[i][j]=='R';
+    V<int> c(k);
+    loop(i,0,cnt){
+        c[i%k]++;
+    }
+    V<PII> pos;
+    loop(i,0,n){
+        if(i%2 == 0)loop(j,0,m)pos.emplace_back(i,j);
+        else loopr(j,m-1,0)pos.emplace_back(i,j);
+    }
+    stack<char> op;
+    for(char i = '0'; i <= '9'; ++i)op.push(i);
+    for(char i = 'a'; i <= 'z'; ++i)op.push(i);
+    for(char i = 'A'; i <= 'Z'; ++i)op.push(i);
+    V<string> ans(n,string(m,'.'));
+    int cur = 0;
+    for(auto i: pos){
+        if(arr[i.F][i.S]=='R'&&c[cur]==0)cur++,op.pop();
+        if(arr[i.F][i.S]=='R')c[cur]--;
+        ans[i.F][i.S]=op.top();
+    }
+    loop(i,0,n)cout << ans[i] << "\n";
+}
 
 int main(){
-    int n;
-    cin >> n;
-    V<PII> ans;
-    loop(i,0,3){
-        string a;
-        cin >> a;
-        int mx = 0;
-        unordered_map<int,int> m;
-        for(auto &j: a){
-            m[j]++;
-        }
-        if(n == 1 && m.size() == 1){
-            mx = a.size()-1;
-        }else{
-            for(auto &j: m){
-                int rem = a.size()-j.S;
-                if(rem >= n){
-                    mx=max(mx,n+j.S);
-
-                }else{
-                    mx = max(mx,int(a.size()));
-                }
-            }
-        }
-        ans.emplace_back(mx,i);
-    }
-    // for(auto &i: ans)printf("per = %d, cost = %d\n",i.S,i.F);
-    sort(all(ans));
-    if(ans[1].F == ans[2].F)cout << "Draw";
-    else{
-        switch (ans[2].S)
-        {
-            case 0: cout << "Kuro"; break;
-            case 1: cout << "Shiro"; break;
-            case 2: cout << "Katie"; break;
-        }
-    }
-
+    int t;
+    cin >> t;
+    while(t--)solve();
    return 0;
 }

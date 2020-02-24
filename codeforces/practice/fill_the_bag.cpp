@@ -43,45 +43,37 @@ using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_
 const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
-
-int main(){
-    int n;
-    cin >> n;
-    V<PII> ans;
-    loop(i,0,3){
-        string a;
-        cin >> a;
-        int mx = 0;
-        unordered_map<int,int> m;
-        for(auto &j: a){
-            m[j]++;
-        }
-        if(n == 1 && m.size() == 1){
-            mx = a.size()-1;
-        }else{
-            for(auto &j: m){
-                int rem = a.size()-j.S;
-                if(rem >= n){
-                    mx=max(mx,n+j.S);
-
-                }else{
-                    mx = max(mx,int(a.size()));
-                }
+ll a[maxn+30];
+void solve(){
+    unordered_map<int,int> m;
+    ll n,s=0,k;
+    scanf("%lld%lld",&n,&k);
+    loop(i,0,k)scanf("%lld",a+i);
+    loop(i,0,k)m[ceil(log2(a[i]))]++,s+=a[i];
+    if(s < n){
+        cout << "-1\n";
+        return ;
+    }
+    int ans = 0;
+    int i = 0;
+    while(i < 60){
+        if((n>>i)&1){
+            if(m[i])m[i]--;
+            else{
+                while(i < 70 && m[i] == 0)i++,ans++;
+                m[i]--;
+                continue;
             }
         }
-        ans.emplace_back(mx,i);
+        m[i+1]+=(m[i]>>1);
+        i++;
     }
-    // for(auto &i: ans)printf("per = %d, cost = %d\n",i.S,i.F);
-    sort(all(ans));
-    if(ans[1].F == ans[2].F)cout << "Draw";
-    else{
-        switch (ans[2].S)
-        {
-            case 0: cout << "Kuro"; break;
-            case 1: cout << "Shiro"; break;
-            case 2: cout << "Katie"; break;
-        }
-    }
+    cout << ans << "\n";
+}
 
+int main(){
+    int t;
+    cin >> t;
+    while(t--)solve();
    return 0;
 }

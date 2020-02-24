@@ -41,47 +41,50 @@ using namespace __gnu_pbds;
 template <typename T>
 using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
 const ll maxn = 1e5;
-const ll inf = 1e9;
+const ll inf = 1e15;
 const double pi = acos(-1);
+int n; ll s;
+V<PLL> a;
+
+bool check(ll mi){
+    ll sum = 0;
+    int c = 0;
+    V<ll> v;
+    loop(i,0,n){
+        if(a[i].S < mi)sum+=a[i].F;
+        else if(a[i].F > mi)sum+=a[i].F,c++;
+        else v.emplace_back(a[i].F);
+    }
+    ll req = max(0,(n+1)/2-c); // * Minimum number of elements which should have been greater than mi
+    if(req > v.size())return false;
+    // printf("mi = %lld, sum = %lld\n",mi,sum);
+    sum+=accumulate(v.begin(),v.end()-req,0LL);
+    sum+=(req*1LL*mi);
+    // printf("mi = %lld, sum = %lld\n",mi,sum);
+    return sum <= s;
+}
+
+void solve(){
+    scanf("%d%lld",&n,&s);
+    a.resize(n);
+    loop(i,0,n)scanf("%lld%lld",&a[i].F,&a[i].S);
+    sort(all(a));
+    ll lo = 1;
+    ll hi = inf;
+    ll ans = 0;
+    while(lo <= hi){
+        ll mi = lo + hi >> 1;
+        if(check(mi)){
+            ans = mi;
+            lo = mi+1;
+        }else hi = mi - 1;
+    }
+    printf("%lld\n",ans);
+}
 
 int main(){
-    int n;
-    cin >> n;
-    V<PII> ans;
-    loop(i,0,3){
-        string a;
-        cin >> a;
-        int mx = 0;
-        unordered_map<int,int> m;
-        for(auto &j: a){
-            m[j]++;
-        }
-        if(n == 1 && m.size() == 1){
-            mx = a.size()-1;
-        }else{
-            for(auto &j: m){
-                int rem = a.size()-j.S;
-                if(rem >= n){
-                    mx=max(mx,n+j.S);
-
-                }else{
-                    mx = max(mx,int(a.size()));
-                }
-            }
-        }
-        ans.emplace_back(mx,i);
-    }
-    // for(auto &i: ans)printf("per = %d, cost = %d\n",i.S,i.F);
-    sort(all(ans));
-    if(ans[1].F == ans[2].F)cout << "Draw";
-    else{
-        switch (ans[2].S)
-        {
-            case 0: cout << "Kuro"; break;
-            case 1: cout << "Shiro"; break;
-            case 2: cout << "Katie"; break;
-        }
-    }
-
+    int t;
+    scanf("%d",&t);
+    while(t--)solve();
    return 0;
 }

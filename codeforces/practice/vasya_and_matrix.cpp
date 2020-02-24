@@ -43,45 +43,48 @@ using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_
 const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
+ll dp[110][110];
+ll a[110];
+ll b[110];
+int n,m;
 
 int main(){
-    int n;
-    cin >> n;
-    V<PII> ans;
-    loop(i,0,3){
-        string a;
-        cin >> a;
-        int mx = 0;
-        unordered_map<int,int> m;
-        for(auto &j: a){
-            m[j]++;
-        }
-        if(n == 1 && m.size() == 1){
-            mx = a.size()-1;
-        }else{
-            for(auto &j: m){
-                int rem = a.size()-j.S;
-                if(rem >= n){
-                    mx=max(mx,n+j.S);
-
-                }else{
-                    mx = max(mx,int(a.size()));
-                }
-            }
-        }
-        ans.emplace_back(mx,i);
+    cin >> n >> m;
+    loop(i,0,n){
+        cin >> a[i];
     }
-    // for(auto &i: ans)printf("per = %d, cost = %d\n",i.S,i.F);
-    sort(all(ans));
-    if(ans[1].F == ans[2].F)cout << "Draw";
-    else{
-        switch (ans[2].S)
-        {
-            case 0: cout << "Kuro"; break;
-            case 1: cout << "Shiro"; break;
-            case 2: cout << "Katie"; break;
+    loop(i,0,m){
+        cin >> b[i];
+    }
+    loop(bit,0,35){
+        V<int> A,B;
+        loop(i,0,n)if((a[i]>>bit)&1LL)A.pb(i);
+        loop(i,0,m)if((b[i]>>bit)&1LL)B.pb(i);
+        if(abs(int(A.size()-B.size()))&1){
+            cout << "NO\n";
+            return 0;
+        }
+        if(A.size() == 0 && B.size() == 0)continue;
+        if(A.size() == 0)A.pb(0);
+        if(B.size() == 0)B.pb(0);
+        while(B.size() > A.size()){
+            dp[A.back()][B.back()]|=(1LL<<bit);
+            B.pop_back();
+        }
+        while(B.size() < A.size()){
+            dp[A.back()][B.back()]|=(1LL<<bit);
+            A.pop_back();
+        }
+        while(A.size() && B.size()){
+            dp[A.back()][B.back()]|=(1LL<<bit);
+            B.pop_back();
+            A.pop_back();
         }
     }
-
+    cout << "YES\n";
+    loop(i,0,n){
+        loop(j,0,m)cout << dp[i][j] << " ";
+        cout << "\n";
+    }
    return 0;
 }
