@@ -1,5 +1,4 @@
 #include <bits/stdc++.h>
-//For ordered_set
 #include <ext/pb_ds/assoc_container.hpp>
 #include <ext/pb_ds/tree_policy.hpp>
 #define MOD 1000000007
@@ -23,7 +22,7 @@
 #define M map
 #define UM unordered_map
 #define mp make_pair
-#define pb push_back
+#define pb emplace_back
 #define pf push_front
 #define MM multimap
 #define F first
@@ -40,30 +39,40 @@ using namespace std;
 using namespace __gnu_pbds;
 template <typename T>
 using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-const ll N = 3e5 + 100;
+const ll N = 1e5 + 10;
 const ll inf = 1e9;
 const double pi = acos(-1);
 
-// * Code from "okwedook"
-
-ll arr[N],dp[N];
+int n;
+V<int> g[N];
+int col[N];
+ll dp[N][2];
+void dfs(int s, int p = -1){
+    dp[s][col[s]] = 1;
+    for(auto &i : g[s]){
+        if(i == p)continue;
+        dfs(i,s);
+        dp[s][1] = ((dp[s][1]*(dp[i][1]+dp[i][0]))%MOD + (dp[s][0]*dp[i][1])%MOD)%MOD;
+        dp[s][0] = (dp[s][0]*(dp[i][1]+dp[i][0]))%MOD;
+    }
+}
+void solve(int test_case){
+    scanf("%d",&n);
+    loop(i,1,n){
+        int a;
+        scanf("%d",&a);
+        g[a].pb(i);
+        g[i].pb(a);
+    }
+    loop(i,0,n){
+        cin >> col[i];
+    }
+    dfs(0);
+    printf("%lld\n",dp[0][1]);
+}
 
 int main(){
-   ll n,m,k;
-   scanf("%lld%lld%lld",&n,&m,&k);
-   loop(i,0,n)scanf("%lld",arr+i);
-   ll ans = 0;
-   loop(i,0,n){
-      dp[i] = arr[i]-k;
-      ll s = arr[i];
-      for(int j = i-1; j >= 0 && i-j <= m; --j){
-         if(dp[i] < dp[j]+s-k)dp[i]=dp[j]+s-k;
-         s += arr[j];
-      }
-      if(i < m && dp[i] < s-k)dp[i] = s - k;
-      dp[i] = max(dp[i],0LL);
-      ans = max(ans,dp[i]);
-   }
-   cout << ans;
-   return 0;
+	int t = 1;
+	//cin >> t;
+	loop(i,1,t+1)solve(i);
 }

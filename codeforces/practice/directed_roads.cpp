@@ -40,30 +40,72 @@ using namespace std;
 using namespace __gnu_pbds;
 template <typename T>
 using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-const ll N = 3e5 + 100;
+const ll N = 2e5+100;
 const ll inf = 1e9;
 const double pi = acos(-1);
+V<int> g[N];
+int comp[N],cur,lt[N],dt[N],c,in[N];
+stack<int> st;
 
-// * Code from "okwedook"
+void popper(int stop){
+    cur++;
+    while(1){
+        int n = st.top();
+        st.pop();
+        comp[n] = cur;
+        in[n] = 0;
+        if(n == stop)break;
+    }
+}
 
-ll arr[N],dp[N];
+void dfs(int s = 0){
+    lt[s] = dt[s] = ++c;
+    in[s] = 1;
+    st.push(s);
+    for(int &i: g[s]){
+        if(in[i])lt[s]=min(lt[s],lt[i]);
+        else if(dt[i] == 0){
+            dfs(i);
+            lt[s] = min(lt[s],lt[i]);
+        }
+    }
+    if(lt[s] == dt[s])popper(s);
+}
+
+ll power(ll a, ll n){
+    if(n == 0)return 1;
+    if(n == 1)return a%MOD;
+    ll p = power(a,n>>1);
+    p*=p;
+    if(p>=MOD)p%=MOD;
+    if(n&1){
+        p*=a;
+        if(p>=MOD)p%=MOD;
+    }
+    return p;
+}
 
 int main(){
-   ll n,m,k;
-   scanf("%lld%lld%lld",&n,&m,&k);
-   loop(i,0,n)scanf("%lld",arr+i);
-   ll ans = 0;
-   loop(i,0,n){
-      dp[i] = arr[i]-k;
-      ll s = arr[i];
-      for(int j = i-1; j >= 0 && i-j <= m; --j){
-         if(dp[i] < dp[j]+s-k)dp[i]=dp[j]+s-k;
-         s += arr[j];
-      }
-      if(i < m && dp[i] < s-k)dp[i] = s - k;
-      dp[i] = max(dp[i],0LL);
-      ans = max(ans,dp[i]);
-   }
-   cout << ans;
+    int n,a;
+    scanf("%d",&n);
+    loop(i,1,n+1){
+        scanf("%d",&a);
+        g[i].emplace_back(a);
+    }
+    loop(i,1,n+1)if(dt[i]==0)dfs(i);
+    ll f=0;
+    unordered_map<int,ll> cnt;
+    loop(i,1,n+1){
+        for(auto &j: g[i]){
+            if(comp[i] == comp[j])cnt[comp[i]]++;
+            else f++;
+        }
+    }
+    ll ans = power(2,f);
+    for(auto &i: cnt){
+        ans*=((power(2,i.second)-2+MOD)%MOD);
+        if(ans >= MOD)ans%=MOD;
+    }
+    printf("%lld",ans);
    return 0;
 }

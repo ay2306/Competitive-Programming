@@ -40,30 +40,38 @@ using namespace std;
 using namespace __gnu_pbds;
 template <typename T>
 using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-const ll N = 3e5 + 100;
+const ll N = 1e2+5;
 const ll inf = 1e9;
 const double pi = acos(-1);
-
-// * Code from "okwedook"
-
-ll arr[N],dp[N];
-
+ld dp[N][N][N];
 int main(){
-   ll n,m,k;
-   scanf("%lld%lld%lld",&n,&m,&k);
-   loop(i,0,n)scanf("%lld",arr+i);
-   ll ans = 0;
-   loop(i,0,n){
-      dp[i] = arr[i]-k;
-      ll s = arr[i];
-      for(int j = i-1; j >= 0 && i-j <= m; --j){
-         if(dp[i] < dp[j]+s-k)dp[i]=dp[j]+s-k;
-         s += arr[j];
-      }
-      if(i < m && dp[i] < s-k)dp[i] = s - k;
-      dp[i] = max(dp[i],0LL);
-      ans = max(ans,dp[i]);
-   }
-   cout << ans;
+    int n,m,l;
+    scanf("%d%d%d",&n,&l,&m);
+    dp[n][m][l] = 1;
+    for(int sum = n+m+l; sum > 0; sum--){
+        for(int r = n; r >= 0; r--){
+            for(int p = m; p >= 0; p--){
+                int s = sum - p - r;
+                if(s > l || s < 0)continue;
+                if(p == 0 && r == 0)continue;
+                if(s == 0 && r == 0)continue;
+                if(p == 0 && s == 0)continue;
+                ld cur = dp[r][p][s];
+                ld waysR = r*s;
+                ld waysS = s*p;
+                ld waysP = p*r;
+                ld tot = waysR + waysP + waysS;
+                if(r > 0)dp[r-1][p][s] += cur*(waysP/tot);
+                if(p > 0)dp[r][p-1][s] += cur*(waysS/tot);
+                if(s > 0)dp[r][p][s-1] += cur*(waysR/tot);
+
+            }
+        }
+    }
+    ld r = 0,p = 0,s = 0;
+    loop(i,1,n+1)r+=dp[i][0][0];
+    loop(i,1,m+1)p+=dp[0][i][0];
+    loop(i,1,l+1)s+=dp[0][0][i];
+    printf("%.10Lf %.10Lf %.10Lf",r,s,p);
    return 0;
 }

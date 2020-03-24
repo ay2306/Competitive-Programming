@@ -2,7 +2,7 @@
 //For ordered_set
 #include <ext/pb_ds/assoc_container.hpp>
 #include <ext/pb_ds/tree_policy.hpp>
-#define MOD 1000000007
+#define MOD 998244353
 #define test int t; cin>>t; while(t--)
 #define init(arr,val) memset(arr,val,sizeof(arr))
 #define loop(i,a,b) for(int i=a;i<b;i++)
@@ -40,30 +40,23 @@ using namespace std;
 using namespace __gnu_pbds;
 template <typename T>
 using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-const ll N = 3e5 + 100;
+const ll N = 2e5+10;
 const ll inf = 1e9;
 const double pi = acos(-1);
-
-// * Code from "okwedook"
-
-ll arr[N],dp[N];
-
+int arr[N],lst[N];
+int n;
 int main(){
-   ll n,m,k;
-   scanf("%lld%lld%lld",&n,&m,&k);
-   loop(i,0,n)scanf("%lld",arr+i);
-   ll ans = 0;
-   loop(i,0,n){
-      dp[i] = arr[i]-k;
-      ll s = arr[i];
-      for(int j = i-1; j >= 0 && i-j <= m; --j){
-         if(dp[i] < dp[j]+s-k)dp[i]=dp[j]+s-k;
-         s += arr[j];
-      }
-      if(i < m && dp[i] < s-k)dp[i] = s - k;
-      dp[i] = max(dp[i],0LL);
-      ans = max(ans,dp[i]);
-   }
-   cout << ans;
+    map<int,int> m;
+    scanf("%d",&n);
+    loop(i,0,n){scanf("%lld",arr+i);if(m.find(arr[i])==m.end()){int k = m.size(); m[arr[i]] = k;}}
+    loop(i,0,n){arr[i]=m[arr[i]];lst[arr[i]]=i;}
+    ll ans = 1;
+    int cur = 0;
+    loop(i,0,n-1){
+        cur = max(cur,lst[arr[i]]);
+        if(cur == i)ans*=2;
+        if(ans >= MOD)ans%=MOD;
+    }
+    printf("%lld",ans);
    return 0;
 }

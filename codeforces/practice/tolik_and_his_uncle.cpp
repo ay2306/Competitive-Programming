@@ -40,30 +40,29 @@ using namespace std;
 using namespace __gnu_pbds;
 template <typename T>
 using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-const ll N = 3e5 + 100;
+const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
 
-// * Code from "okwedook"
-
-ll arr[N],dp[N];
-
 int main(){
-   ll n,m,k;
-   scanf("%lld%lld%lld",&n,&m,&k);
-   loop(i,0,n)scanf("%lld",arr+i);
-   ll ans = 0;
-   loop(i,0,n){
-      dp[i] = arr[i]-k;
-      ll s = arr[i];
-      for(int j = i-1; j >= 0 && i-j <= m; --j){
-         if(dp[i] < dp[j]+s-k)dp[i]=dp[j]+s-k;
-         s += arr[j];
-      }
-      if(i < m && dp[i] < s-k)dp[i] = s - k;
-      dp[i] = max(dp[i],0LL);
-      ans = max(ans,dp[i]);
-   }
-   cout << ans;
+    int n,m;
+    scanf("%d%d",&n,&m);
+    V<PII> arr;
+    int i1 = 0;
+    int i2 = n-1;
+    while(i1 <= i2){
+        int j1 = 0;
+        int j2 = m-1;
+        while(j1 <= m-1){
+            if(i1 == i2 && j1 > j2)break;
+            arr.emplace_back(i1,j1);
+            if(i1 != i2 || j1 != j2)arr.emplace_back(i2,j2);
+            j1++;
+            j2--;
+        }
+        i1++;
+        i2--;
+    }
+    for(auto &i : arr)printf("%d %d\n",i.first+1,i.second+1);
    return 0;
 }

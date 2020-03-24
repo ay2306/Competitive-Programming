@@ -40,30 +40,28 @@ using namespace std;
 using namespace __gnu_pbds;
 template <typename T>
 using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-const ll N = 3e5 + 100;
+const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
 
-// * Code from "okwedook"
-
-ll arr[N],dp[N];
-
 int main(){
-   ll n,m,k;
-   scanf("%lld%lld%lld",&n,&m,&k);
-   loop(i,0,n)scanf("%lld",arr+i);
-   ll ans = 0;
-   loop(i,0,n){
-      dp[i] = arr[i]-k;
-      ll s = arr[i];
-      for(int j = i-1; j >= 0 && i-j <= m; --j){
-         if(dp[i] < dp[j]+s-k)dp[i]=dp[j]+s-k;
-         s += arr[j];
-      }
-      if(i < m && dp[i] < s-k)dp[i] = s - k;
-      dp[i] = max(dp[i],0LL);
-      ans = max(ans,dp[i]);
-   }
-   cout << ans;
+    int n;
+    cin >> n;
+    string a = "abc";
+    string b , c;
+    cin >> b >> c;
+    V<string> pos;
+    do{
+        pos.emplace_back("");
+        loop(i,0,n)*pos.rbegin()+=a;
+        pos.emplace_back(string(n,a[0])+string(n,a[1])+string(n,a[2]));
+    }while(next_permutation(all(a)));
+    for(auto &i: pos){
+        if(i.find(b) == string::npos && i.find(c) == string::npos){
+            cout << "YES\n" << i;
+            return 0;
+        }
+    }
+    cout << "NO\n";
    return 0;
 }

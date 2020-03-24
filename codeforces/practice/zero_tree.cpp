@@ -40,30 +40,35 @@ using namespace std;
 using namespace __gnu_pbds;
 template <typename T>
 using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-const ll N = 3e5 + 100;
+const ll N = 1e5+10;
 const ll inf = 1e9;
 const double pi = acos(-1);
-
-// * Code from "okwedook"
-
-ll arr[N],dp[N];
+V<int> g[N];
+ll v[N];
+ll a[N],sub[N];
+void dfs(int s, int p = -1){
+    for(auto &i: g[s]){
+        if(i == p)continue;
+        dfs(i,s);
+        a[s]=max(a[s],a[i]);
+        sub[s]=max(sub[s],sub[i]);
+    }
+    v[s]+=sub[s];
+    v[s]-=a[s];
+    a[s]+=max(0LL,v[s]);
+    sub[s]+=max(0LL,-v[s]);
+}
 
 int main(){
-   ll n,m,k;
-   scanf("%lld%lld%lld",&n,&m,&k);
-   loop(i,0,n)scanf("%lld",arr+i);
-   ll ans = 0;
-   loop(i,0,n){
-      dp[i] = arr[i]-k;
-      ll s = arr[i];
-      for(int j = i-1; j >= 0 && i-j <= m; --j){
-         if(dp[i] < dp[j]+s-k)dp[i]=dp[j]+s-k;
-         s += arr[j];
-      }
-      if(i < m && dp[i] < s-k)dp[i] = s - k;
-      dp[i] = max(dp[i],0LL);
-      ans = max(ans,dp[i]);
-   }
-   cout << ans;
+    int a,b,n;
+    scanf("%d",&n);
+    loop(i,1,n){
+        scanf("%d%d",&a,&b);
+        g[a].emplace_back(b);
+        g[b].emplace_back(a);
+    }
+    loop(i,1,n+1)scanf("%lld",v+i);
+    dfs(1);
+    printf("%lld",::a[1]+sub[1]);
    return 0;
 }

@@ -1,7 +1,7 @@
 #include<bits/stdc++.h>
 using namespace std;
 int overallN;
-template<class T,bool zero>
+template<class T>
 class SegTree{
 protected:
     vector<T> tree;

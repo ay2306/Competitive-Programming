@@ -40,30 +40,24 @@ using namespace std;
 using namespace __gnu_pbds;
 template <typename T>
 using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-const ll N = 3e5 + 100;
+const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
 
-// * Code from "okwedook"
-
-ll arr[N],dp[N];
-
 int main(){
-   ll n,m,k;
-   scanf("%lld%lld%lld",&n,&m,&k);
-   loop(i,0,n)scanf("%lld",arr+i);
-   ll ans = 0;
-   loop(i,0,n){
-      dp[i] = arr[i]-k;
-      ll s = arr[i];
-      for(int j = i-1; j >= 0 && i-j <= m; --j){
-         if(dp[i] < dp[j]+s-k)dp[i]=dp[j]+s-k;
-         s += arr[j];
-      }
-      if(i < m && dp[i] < s-k)dp[i] = s - k;
-      dp[i] = max(dp[i],0LL);
-      ans = max(ans,dp[i]);
-   }
-   cout << ans;
+    int n;
+    scanf("%d",&n);
+    set<int> to_remove;
+    V<int> arr(n);
+    for(auto &i : arr)scanf("%d",&i);
+    sort(all(arr));
+    int g = 0;
+    for(auto &i: arr)g=__gcd(g,i);
+    if(g != arr[0])return cout << -1,0;
+    cout << 2*n-1 << "\n";
+    cout << arr[0] << " ";
+    loop(i,1,n){
+        cout << arr[i] << " " << arr[0] << " ";
+    }
    return 0;
 }

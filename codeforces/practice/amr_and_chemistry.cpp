@@ -40,30 +40,35 @@ using namespace std;
 using namespace __gnu_pbds;
 template <typename T>
 using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-const ll N = 3e5 + 100;
+const ll N = 1e5+100;
 const ll inf = 1e9;
 const double pi = acos(-1);
-
-// * Code from "okwedook"
-
-ll arr[N],dp[N];
-
+int cnt[N], steps[N], vis[N], arr[N];
 int main(){
-   ll n,m,k;
-   scanf("%lld%lld%lld",&n,&m,&k);
-   loop(i,0,n)scanf("%lld",arr+i);
-   ll ans = 0;
-   loop(i,0,n){
-      dp[i] = arr[i]-k;
-      ll s = arr[i];
-      for(int j = i-1; j >= 0 && i-j <= m; --j){
-         if(dp[i] < dp[j]+s-k)dp[i]=dp[j]+s-k;
-         s += arr[j];
-      }
-      if(i < m && dp[i] < s-k)dp[i] = s - k;
-      dp[i] = max(dp[i],0LL);
-      ans = max(ans,dp[i]);
-   }
-   cout << ans;
+    int n;
+    scanf("%d",&n);
+    loop(i,1,n+1)scanf("%d",arr+i);
+    int mx = N;
+    loop(i,1,n+1){
+        queue<PII> q;
+        q.push({arr[i],0});
+        while(q.size()){
+            int x = q.front().F;
+            int y = q.front().S;
+            q.pop();
+            if(vis[x] == i)continue;
+            if(x >= N)continue;
+            cnt[x]++;
+            steps[x]+=y;
+            vis[x] = i;
+            q.push({2*x,y+1});
+            q.push({x>>1,y+1});
+        }
+    }   
+    int ans = INT_MAX;
+    loop(i,0,N){
+        if(cnt[i] == n)ans=min(ans,steps[i]);
+    }
+    cout << ans;
    return 0;
 }

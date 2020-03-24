@@ -37,59 +37,72 @@
 #define ld long double
 using namespace std;
 // For ordered_set
-using namespace __gnu_pbds;
-template <typename T>
-using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
 const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
+
+struct edge{
+   int a;
+   int b;
+   ll c;
+   edge(int _a, int _b, ll _c):a(_a),b(_b),c(_c){}
+   bool operator< (const edge &rhs)const{
+      return c < rhs.c;
+   }
+   bool operator> (const edge &rhs)const{
+      return c > rhs.c;
+   }
+   bool operator== (const edge &rhs)const{
+      return c == rhs.c;
+   }
+};
+
 int n;
-V<PLL> c;
-V<ll> k;
+V<ll> k,c;
 V<PLL> pos;
+V<int> p;
+V<edge> e;
+int fp(int x){if(x != p[x])p[x]=fp(p[x]); return p[x];}
+void un(int a, int b){p[fp(a)]=fp(b);}
 int main(){
    cin >> n;
-   loop(i,0,n){
-      ll e,f;
-      cin >> e >> f;
-      pos.emplace_back(e,f);
-   }
-   loop(i,0,n){
-      ll e;
-      cin >> e;
-      c.emplace_back(e,i);
-   }
-   loop(i,0,n){
-      ll e;
-      cin >> e;
-      k.emplace_back(e);
-   }
-   sort(all(c),greater<PLL> ());
-   ll cst = 0;
-   V<PLL> ed;
-   set<int> s;
-   loop(i,0,n)cst+=c[i].F,s.insert(c[i].S);
-   loop(i,0,n){
-      ll mn = LLONG_MAX;
-      int o;
-      loop(j,i+1,n){
-         if((abs(pos[c[i].S].F-pos[c[j].S].F)+abs(pos[c[i].S].S-pos[c[j].S].S))*(k[c[i].S]+k[c[j].S]) < mn){
-            mn = (abs(pos[c[i].S].F-pos[c[j].S].F)+abs(pos[c[i].S].S-pos[c[j].S].S))*(k[c[i].S]+k[c[j].S]);
-            o = j;
-         }
-      }
-      if(mn < c[i].F){
-         s.erase(c[i].S);
-         cst-=c[i].F;
-         cst+=mn;
-         ed.emplace_back(c[i].S,c[o].S);
+   k.resize(n+1);
+   c.resize(n+1);
+   pos.resize(n+1);
+   p.resize(n+1);
+   loop(i,0,n+1)p[i]=i;
+   loop(i,1,n+1)cin >> pos[i].F >> pos[i].S;
+   loop(i,1,n+1)cin>>c[i];
+   loop(i,1,n+1)cin>>k[i];
+   //add edges
+   loop(i,1,n+1)e.emplace_back(edge(i,0,c[i]));
+   loop(i,1,n+1){
+      loop(j,i+1,n+1){
+         ll cst = (k[i]+k[j])*(abs(pos[i].F-pos[j].F)+abs(pos[i].S-pos[j].S));
+         e.emplace_back(edge(i,j,cst));
       }
    }
-   cout << cst << "\n";
-   cout << s.size() << "\n";
-   for(auto &i: s)cout << i+1 << " ";
+   ll ans = 0;
+   V<int> self;
+   multiset<edge> mst;
+   multiset<edge> abc;
+   sort(all(e));
+   for(auto &i: e){
+      // printf("(%d (%d), %d (%d))\n",i.a,fp(i.a),i.b,fp(i.b));
+      if(fp(i.a) != fp(i.b)){
+         un(i.a,i.b);
+         mst.insert(i);
+         ans+=i.c;
+      }
+   }
+   for(auto &i: mst)if(i.b == 0)self.emplace_back(i.a);else abc.insert(i);
+   cout << ans << "\n";
+   cout <<  self.size() << "\n";
+   for(auto &i: self)cout << i << " ";
    cout << "\n";
-   cout << ed.size() << "\n";
-   for(auto &i: ed)cout << i.F+1 << " " << i.S+1 << "\n";
+   cout <<  abc.size() << "\n";
+   for(auto &i: abc)cout << i.a << " " << i.b << "\n";
+   cout << "\n";
+   
    return 0;
 }

@@ -40,30 +40,33 @@ using namespace std;
 using namespace __gnu_pbds;
 template <typename T>
 using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-const ll N = 3e5 + 100;
+const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
 
-// * Code from "okwedook"
-
-ll arr[N],dp[N];
-
 int main(){
-   ll n,m,k;
-   scanf("%lld%lld%lld",&n,&m,&k);
-   loop(i,0,n)scanf("%lld",arr+i);
-   ll ans = 0;
-   loop(i,0,n){
-      dp[i] = arr[i]-k;
-      ll s = arr[i];
-      for(int j = i-1; j >= 0 && i-j <= m; --j){
-         if(dp[i] < dp[j]+s-k)dp[i]=dp[j]+s-k;
-         s += arr[j];
-      }
-      if(i < m && dp[i] < s-k)dp[i] = s - k;
-      dp[i] = max(dp[i],0LL);
-      ans = max(ans,dp[i]);
-   }
-   cout << ans;
+    // x**2 - y**2 = k
+    // (x-y)(x+y) = k
+    // 2x = a+b
+    ll k;
+    scanf("%lld",&k);
+    set<ll> ans;
+    for(ll i = 1; i*i <= k; ++i){
+        if(k%i)continue;
+        ll a = i;
+        ll b = k/i;
+        if(a+b&1)continue;
+        if(b-a&1)continue;
+        ll x = a+b >> 1;
+        ll y = b-a >> 1;
+        ans.insert(y);
+    }
+    // for(ll i = -1; i*i <= inf; --i){
+    //     if(int(sqrt(abs(k)))*int(sqrt(abs(k))) == abs(k) && int(sqrt(abs(i+k)))*int(sqrt(abs(i+k))) == abs(i+k)){
+    //         ans.insert(i);
+    //     }
+    // }
+    if(ans.size() == 0)cout << ans.size() << "\n";
+    for(auto &i: ans)cout << i << " ";
    return 0;
 }

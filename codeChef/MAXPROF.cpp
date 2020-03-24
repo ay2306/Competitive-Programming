@@ -1,7 +1,4 @@
 #include <bits/stdc++.h>
-//For ordered_set
-#include <ext/pb_ds/assoc_container.hpp>
-#include <ext/pb_ds/tree_policy.hpp>
 #define MOD 1000000007
 #define test int t; cin>>t; while(t--)
 #define init(arr,val) memset(arr,val,sizeof(arr))
@@ -23,7 +20,7 @@
 #define M map
 #define UM unordered_map
 #define mp make_pair
-#define pb push_back
+#define pb emplace_back
 #define pf push_front
 #define MM multimap
 #define F first
@@ -34,36 +31,33 @@
 #define FILE_READ_IN freopen("input.txt","r",stdin);
 #define FILE_READ_OUT freopen("output.txt","w",stdout);
 #define all(a) a.begin(),a.end()
-#define ld long double
 using namespace std;
-// For ordered_set
-using namespace __gnu_pbds;
-template <typename T>
-using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-const ll N = 3e5 + 100;
-const ll inf = 1e9;
-const double pi = acos(-1);
-
-// * Code from "okwedook"
-
-ll arr[N],dp[N];
+ll dp[1010][1010][3];
+PLL d[1010];
+void solve(int test_case){
+	ll n,W,x,y;
+	cin >> n >> W >> x >> y;
+	if(x > y)swap(x,y);
+	loop(i,1,n+1)cin >> d[i].S;
+	loop(i,1,n+1)cin >> d[i].F;
+	sort(d+1,d+n+1);
+	ll ans = 0;
+	loop(i,1,n+1){
+		loop(j,1,W+1){
+			loop(k,0,3)dp[i][j][k] = dp[i-1][j][k];
+			if(d[i].S <= j){
+				dp[i][j][0] = max({dp[i][j][0],dp[i-1][j-d[i].S][0]+d[i].F});
+				dp[i][j][1] = max({dp[i][j][1],dp[i-1][j-d[i].S][0]+d[i].F*x,dp[i-1][j-d[i].S][1]+d[i].F});
+				dp[i][j][2] = max({dp[i][j][2],dp[i-1][j-d[i].S][1]+d[i].F*y,dp[i-1][j-d[i].S][2]+d[i].F});
+			}
+			loop(k,0,3)ans = max(ans,dp[i][j][k]);
+		}
+	}
+	cout << ans << "\n";
+}
 
 int main(){
-   ll n,m,k;
-   scanf("%lld%lld%lld",&n,&m,&k);
-   loop(i,0,n)scanf("%lld",arr+i);
-   ll ans = 0;
-   loop(i,0,n){
-      dp[i] = arr[i]-k;
-      ll s = arr[i];
-      for(int j = i-1; j >= 0 && i-j <= m; --j){
-         if(dp[i] < dp[j]+s-k)dp[i]=dp[j]+s-k;
-         s += arr[j];
-      }
-      if(i < m && dp[i] < s-k)dp[i] = s - k;
-      dp[i] = max(dp[i],0LL);
-      ans = max(ans,dp[i]);
-   }
-   cout << ans;
-   return 0;
+	int t = 1;
+	cin >> t;
+	loop(i,1,t+1)solve(i);
 }

@@ -40,30 +40,63 @@ using namespace std;
 using namespace __gnu_pbds;
 template <typename T>
 using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-const ll N = 3e5 + 100;
+const ll maxn = 1e5;
 const ll inf = 1e9;
 const double pi = acos(-1);
 
-// * Code from "okwedook"
-
-ll arr[N],dp[N];
-
+struct node{
+    unordered_map<bool,node*> child;
+    int cnt;
+    node(){
+        cnt = 0;
+    }
+};
+node *root = new node();
+void add(ll val){
+    node *cur = root;
+    for(int _bit = 34; _bit >= 0; _bit--){
+        bool nxt = ((1LL << _bit) & (val)) != 0;
+        if(cur->child.find(nxt) == cur->child.end())cur->child[nxt]=new node();
+        cur = cur->child[nxt];
+        cur->cnt++;
+    }
+}
+void remove(ll val){
+    node *cur = root;
+    for(int _bit = 34; _bit >= 0; _bit--){
+        bool nxt = ((1LL << _bit) & (val)) != 0;
+        cur = cur->child[nxt];
+        cur->cnt--;
+    }
+}
+ll mn(ll x){
+    ll ans = 0;
+    node *cur = root;
+    for(int _bit = 34; _bit >= 0; _bit--){
+        bool nxt = ((1LL << _bit) & (x)) != 0;
+        if(cur->child.find(nxt) != cur->child.end() && cur->child[nxt]->cnt > 0){
+            cur = cur->child[nxt];
+        }else{
+            cur = cur->child[!nxt];
+            ans+=(1LL << _bit);
+        }
+    }
+    return ans;
+}
 int main(){
-   ll n,m,k;
-   scanf("%lld%lld%lld",&n,&m,&k);
-   loop(i,0,n)scanf("%lld",arr+i);
-   ll ans = 0;
-   loop(i,0,n){
-      dp[i] = arr[i]-k;
-      ll s = arr[i];
-      for(int j = i-1; j >= 0 && i-j <= m; --j){
-         if(dp[i] < dp[j]+s-k)dp[i]=dp[j]+s-k;
-         s += arr[j];
-      }
-      if(i < m && dp[i] < s-k)dp[i] = s - k;
-      dp[i] = max(dp[i],0LL);
-      ans = max(ans,dp[i]);
-   }
-   cout << ans;
+    int n; ll c;
+    scanf("%d",&n);
+    V<ll> a(n);
+    for(ll &i: a)scanf("%lld",&i);
+    loop(i,0,n){
+        scanf("%lld",&c);
+        add(c);
+    }
+    loop(i,0,n){
+        c = mn(a[i]);
+        printf("%lld ",c);
+        // printf("(%lld, %lld) ",c,c^a[i]);
+        remove(c^a[i]);
+    }
    return 0;
 }
