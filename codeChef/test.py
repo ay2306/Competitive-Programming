@@ -1,26 +1,27 @@
+fopen = open('input.txt','w')
 import random
 def getArray(array_length,element_lower_bound,element_upper_bound):
     arr = []
     for i in range(array_length):
         arr.append(random.randint(element_lower_bound,element_upper_bound))
     return arr
-def writeArray(array, file):
+def writeArray(array, file = fopen):
     for i in array:
         file.write(str(i)+" " )
     file.write('\n')
 def getNumber(element_lower_bound,element_upper_bound):
     return random.randint(element_lower_bound,element_upper_bound)
-def writeNumber(number, file):
+def writeNumber(number, file = fopen):
     file.write(str(number) + ' ')
     file.write('\n')
 def getString(arr,length):
     S = ""
     i = 0
-    while i < length:
+    while i < len(arr):
         S = S + arr[random.randint(0,len(arr)-1)]
         i = i + 1
     return S
-def writeString(S,file):
+def writeString(S,file = fopen):
     file.write(str(S) + "\n")
 capLetters = []
 i = 65
@@ -37,9 +38,7 @@ i = 0
 while i < 10:
     digits.append(str(i))
     i = i + 1
-fopen = open('input.txt','w')
-t = getNumber(1,5)
-writeNumber(t,fopen)
-for i in range(t):
-    writeString(getString(smallLetters,getNumber(1,5)),fopen)
-    writeString(getString(smallLetters,getNumber(15,20)),fopen)
+writeNumber(1)
+n=getNumber(10,500)
+writeNumber(n)
+writeArray(getArray(n,-10000000,10000000))

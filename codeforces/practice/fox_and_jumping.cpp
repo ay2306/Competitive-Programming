@@ -1,58 +1,28 @@
-#include <bits/stdc++.h>
-//For ordered_set
-#include <ext/pb_ds/assoc_container.hpp>
-#include <ext/pb_ds/tree_policy.hpp>
-#define MOD 1000000007
-#define test int t; cin>>t; while(t--)
-#define init(arr,val) memset(arr,val,sizeof(arr))
-#define loop(i,a,b) for(int i=a;i<b;i++)
-#define loopr(i,a,b) for(int i=a;i>=b;i--)
-#define loops(i,a,b,step) for(int i=a;i<b;i+=step)
-#define looprs(i,a,b,step) for(int i=a;i>=b;i-=step)
-#define ull unsigned long long int
+//https://codeforces.com/contest/510/problem/D
+#include<bits/stdc++.h>
 #define ll long long int
-#define P pair
-#define PLL pair<long long, long long>
-#define PII pair<int, int>
-#define PUU pair<unsigned long long int, unsigned long long int>
-#define L list
-#define V vector
-#define D deque
-#define ST set
-#define MS multiset
-#define M map
-#define UM unordered_map
-#define mp make_pair
-#define pb push_back
-#define pf push_front
-#define MM multimap
-#define F first
-#define S second
-#define IT iterator
-#define RIT reverse_iterator
-#define FAST ios_base::sync_with_stdio(false);cin.tie();cout.tie();
-#define FILE_READ_IN freopen("input.txt","r",stdin);
-#define FILE_READ_OUT freopen("output.txt","w",stdout);
-#define all(a) a.begin(),a.end()
-#define ld long double
 using namespace std;
-// For ordered_set
-using namespace __gnu_pbds;
-template <typename T>
-using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-const ll maxn = 1e5;
-const ll inf = 1e9;
-const double pi = acos(-1);
+ll arr[310],cost[310];
+unordered_map<ll,ll> m;
+int n;
 
 int main(){
-    int n;
     scanf("%d",&n);
-    V<int> a(n),c(n);
-    for(int &i: a)scanf("%d",&i);
-    for(int &i: c)scanf("%d",&i);
-    int ans = INT_MAX;
-    loop(i,0,n)loop(j,i+1,n)if(__gcd(a[i],a[j])==1)ans=min(ans,c[i]+c[j]);
-    if(ans == INT_MAX)ans=-1;
-    cout << ans;
-   return 0;
+    for(int i = 1; i <= n; ++i)scanf("%lld",arr+i);
+    for(int i = 1; i <= n; ++i)scanf("%lld",cost+i);
+    for(int i = 1; i <= n; ++i){
+        ll k = arr[i], s = 1;
+        for(int j = 2; j*j <= k; ++j)if(k%j == 0){s*=j;while(k%j==0)k/=j;}
+        s*=k;
+        for(auto &j: m){
+            ll g = __gcd(s,j.first);
+            if(m.find(g) != m.end())m[g] = min(m[g],cost[i]+j.second);
+            else m[g] = cost[i]+j.second;
+        }
+        if(m.find(s) != m.end())m[s] = min(m[s],cost[i]);
+        else m[s] = cost[i];
+    }
+    if(m.find(1LL)==m.end())m[1LL]=-1;
+    printf("%lld",m[1]);
+    return 0;
 }

@@ -54,22 +54,30 @@ template<class T,class U>ostream& operator<<(ostream& out, const map<T,U> &a){fo
 template<class T,class U>ostream& operator<<(ostream& out, const unordered_map<T,U> &a){for(auto &i: a)cout << "(" << i.first << ", " << i.second << "(\n";return out;}
 
 // Constants
-const ll N = 1e6 + 100;
+const ll N = 1e5 + 100;
+ll MX = 0;
 const ll inf = 1e9;
 const double pi = acos(-1);
 
 int a[N], dist[N], ans = inf, vis[N];
 V<int> v[N],adj[N],start;
-unordered_map<int,int> ind;
+map<int,int> ind;
 queue<P<int,PII>> q;
+int n;
 int c;
 int main(){
-	int n;
-	scanf("%d",&n);
+	FAST
+	cin >> n;
+	// scanf("%d",&n);
 	loop(i,0,n){
-		scanf("%d",a+i);
+		// scanf("%d",a+i);
+		cin >> a[i];
+		MX = max(MX,1LL*a[i]);
+	}
+	MX = sqrt(MX);
+	loop(i,0,n){
 		int x = a[i];
-		for(int j = 2; j*j <= x; ++j){
+		for(int j = 2; j <= sqrt(x); ++j){
 			int cnt = 0;
 			while(x%j == 0)x/=j,cnt++;
 			if(cnt & 1)v[i].pb(j);
@@ -81,20 +89,22 @@ int main(){
 		v[i].pb(x);
 		if(v[i].size() == 1)v[i].pb(1);
 		// printf("VALUE = %d ",a[i]);
-		for(int &j: v[i]){
+		for(int j: v[i]){
 			// printf("%d ",j);
 			if(ind.find(j) == ind.end()){
-				ind[j] = c++;
-				if(j*j < N){
+				ind[j] = c;
+				if(j <= MX){
 					start.pb(c);
 				}
+				++c;
 			}
 		}
 		// printf("\n");
 		adj[ind[v[i][0]]].pb(ind[v[i][1]]);
 		adj[ind[v[i][1]]].pb(ind[v[i][0]]);
 	}
-	for(int &j: start){
+	for(int j: start){
+		// printf("Started from j = %d\n",j);
 		memset(vis,0,sizeof(vis));
 		q.push(mp(0,mp(j,j)));
 		while(q.size()){
@@ -106,7 +116,8 @@ int main(){
 			vis[u] = 1;
 			dist[u] = dis;
 			bool metParent = false;
-			for(int &k: adj[u]){
+			for(int k: adj[u]){
+				// printf("par = %d, k = %d\n",u,k);
 				if(k != v || metParent){
 					if(vis[k]){
 						ans = min(ans,dist[u]+dist[k]+1);
@@ -114,11 +125,12 @@ int main(){
 						q.push(mp(dist[u]+1,mp(k,u)));
 					}
 				}else{
-					metParent = 1;
+					metParent = true;
 				}
 			}
 		}
 	}
 	if(ans == inf)ans = -1;
-	printf("%d",ans);
+	// printf("%d",ans);
+	cout << ans;
 }

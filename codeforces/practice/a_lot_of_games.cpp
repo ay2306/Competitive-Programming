@@ -1,3 +1,4 @@
+//https://codeforces.com/contest/455/problem/B
 #include <bits/stdc++.h>
 //For ordered_set
 #include <ext/pb_ds/assoc_container.hpp>
@@ -42,9 +43,9 @@ const ll inf = 1e9;
 const double pi = acos(-1);
 
 struct node{
+    char c;
     int dep;
     bool win;
-    bool lose;
     unordered_map<char,node*> children;
 };
 
@@ -63,7 +64,8 @@ public:
                 current->children[i] = new node();
             }
             current = current->children[i];
-            current->dep = j;
+            current->dep = j+1;
+            current->c = a[j];
         }
     }
     bool exists(string &a)const{
@@ -76,17 +78,34 @@ public:
         }
         return true;
     }
-    void dfs(node *current){
-        if(current->children.size() == 0)current->win=false,current->lose=true;
-        else{
-            current->win = false;
-            current->lose = false;
-            for(auto i: current->children){
-                dfs(i.S);
-                if(!i.S->win)current->win = true;
-                if(!i.S->lose)current->lose = true;
-            }
+    int dfs(node *current){
+        unordered_map<int,int> m; 
+        if(current->children.size() == 0){
+            cout << "LEAF " << nodeName(current) << " return " << current->dep%2 << "\n";
+            return ((current->dep%2));
         }
+        for(auto &i: current->children){
+            int a = dfs(i.second);
+            m[a]++;
+        }
+        if(m.size() == 2){
+            if(current->dep%2){
+                cout << nodeName(current) << " return 0\n";
+                return 0;
+            }
+            cout << nodeName(current) << " return 1\n";
+            return 1;
+        }
+        else if(m.begin()->first == 1){
+            cout << nodeName(current) << " return 1\n";
+            return 1;
+        }
+        cout << nodeName(current) << " return 0\n";
+        return 0;
+    }   
+    string nodeName(node *a){
+        if(a == parent)return "ROOT";
+        return string(1,a->c);
     }
 };
 
@@ -100,10 +119,11 @@ int main(){
         cin >> b;
         a->add(b);
     }
-    a->dfs(a->parent);
-    if(!a->parent->win)cout << "Second";
-    else if(a->parent->lose)cout << "First";
-    else if(k%2 == 0)cout << "Second";
-    else cout << "First";
+    n = a->dfs(a->parent);
+    if(n == 1){
+        cout << "First";
+    }else{
+        cout << "Second";
+    }
    return 0;
 }
