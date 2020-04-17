@@ -3,44 +3,6 @@ using namespace std;
 typedef long long int ll;
 const ll inf = 1e9+7;
 const int N = 1e5+10;
-
-int pr[N];
-
-ll power(ll a, ll n){
-    if(n == 0)return 1;
-    if(n == 1)return a;
-    ll p = power(a,n>>1);
-    p*=p;
-    if(p >= inf)p%=inf;
-    if(n&1){
-        p*=a;
-        if(p >= inf)p%=inf;
-    }
-    return p;
-}
-
-void pre(){
-    for(int i = 2; i < N; ++i){
-        if(pr[i] == 0){
-            for(int j = i; j < N; j+=i)pr[j]=i;
-        }
-    }
-}
-
-ll Ans(ll g){
-    unordered_map<int,int> m;
-    if(g==1)return -1;
-    while(g > 1){
-        m[pr[g]]++;
-        g/=pr[g];
-    }
-    ll num = m.size();
-    ll denom = 1;
-    for(auto &i: m)denom*=(i.second+1);
-    denom--;
-    return (num*power(denom,inf-2))%inf;
-}
-
 template<class T, int SZ>
 struct segmentTree{
     T sum[SZ<<2], lazy[SZ<<2];
@@ -154,15 +116,8 @@ int main(){
     int q;
     cin >> q;
     ll e,f;
-    string a;
     while(q--){
-        cin >> a;
         cin >> e >> f;
-        if(a[0] == 'a'){
-            hld.modifySubtree(e,f);
-        }else{
-            cout << hld.queryPath(e,f) << "\n";
-        }
     }
     return 0;
 }
