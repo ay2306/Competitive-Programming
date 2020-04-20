@@ -3,7 +3,6 @@ using namespace std;
 typedef long long int ll;
 const ll inf = 1e9+7;
 const int N = 1e5+10;
-
 template<class T, int SZ>
 struct segmentTree{
     T sum[SZ<<2], lazy[SZ<<2];
@@ -115,6 +114,9 @@ int main(){
     for(int i = 1; i < n; ++i){int a,b;cin >> a >> b;hld.addEdge(a,b);}
     hld.init(N);
     int q;
-    cin >> q;
+    ll e,f;
+    while(q--){
+        cin >> e >> f;
+    }
     return 0;
 }
