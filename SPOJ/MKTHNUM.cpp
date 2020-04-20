@@ -1,69 +1,49 @@
-/*
- ____________________________________________________________
-|                                                            |
-|                   Author: ay2306                           |
-|____________________________________________________________|
-
-*/
-#include <bits/stdc++.h>
-#define MOD 1000000007
-#define test int t; cin>>t; while(t--)
-#define init(arr,val) memset(arr,val,sizeof(arr))
-#define loop(i,a,b) for(int i=a;i<b;i++)
-#define loopr(i,a,b) for(int i=a;i>=b;i--)
-#define loops(i,a,b,step) for(int i=a;i<b;i+=step)
-#define looprs(i,a,b,step) for(int i=a;i>=b;i-=step)
-#define ull unsigned long long int
-#define ll long long int
-#define P pair
-#define PLL pair<long long, long long>
-#define PII pair<int, int>
-#define PUU pair<unsigned long long int, unsigned long long int>
-#define L list
-#define V vector
-#define D deque
-#define ST set
-#define MS multiset
-#define M map
-#define UM unordered_map
-#define mp make_pair
-#define pb push_back
-#define pf push_front
-#define MM multimap
-#define F first
-#define S second
-#define IT iterator
-#define RIT reverse_iterator
-#define FAST ios_base::sync_with_stdio(false);cin.tie();cout.tie();
-#define FILE_READ_IN freopen("input.txt","r",stdin);
-#define FILE_READ_OUT freopen("output.txt","w",stdout);
-#define MAXN 25
+#include<bits/stdc++.h>
 using namespace std;
+const int N = 1e5+100;
+int n,q,x,y,z;
+vector<pair<int,int>> nums;
+vector<int> tree[4*N],arr;
 
-void solve(){
-            int carry = 0;
-        int s = 0;
-        if(l1 == NULL && l2 == NULL)return NULL;
-        ListNode* top = NULL;
-        ListNode* ref = top;
-        while(l1 != NULL || l2 != NULL || carry > 0){
-            s = 0;
-            if(l1 != NULL && l2 != NULL)s = l1.val+l2.val;
-            else if(l1 != NULL)s = l1.val;
-            else if(l2 != NULL)s = l2.val;
-            s+=carry;
-            carry = s/10;
-            s = s%10;
-            top = new ListNode(s);
-            ref = top;
-            top = top->next;
-        }
-        return ref;
+void build(int node = 1, int start = 1, int end = n){
+    if(start == end){
+        tree[node].emplace_back(nums[start].second);
+        return;
+    }
+    int mid = start+end >> 1;
+    build(node<<1,start,mid);
+    build(node<<1|1,mid+1,end);
+    merge(tree[node<<1].begin(),tree[node<<1].end(),tree[node<<1|1].begin(),tree[node<<1|1].end(),back_inserter(tree[node]));
+    #ifdef LOCAL
+    printf("node = %d, Data = ",node);
+    for(int &i: tree[node])printf("%d ",i);
+    printf("\n");
+    #endif
 }
 
+int query_kth(int l, int r, int k, int node = 1, int start = 1, int end = n){
+    if(start == end)return tree[node][0];
+    int mid = start+end>>1;
+    auto it = upper_bound(tree[node<<1].begin(),tree[node<<1].end(),r);
+    int total = it-lower_bound(tree[node<<1].begin(),tree[node<<1].end(),l);
+    if(total >= k)return query_kth(l,r,k,node<<1,start,mid);
+    return query_kth(l,r,k-total,node<<1|1,mid+1,end);
+}
 int main(){
-    int t = 1;
-    cin >> t;
-    while(t--)solve();
+    scanf("%d%d",&n,&q);
+    nums.resize(n+1),arr.resize(n+1);
+    for(int i = 1; i <= n; ++i)scanf("%d",&arr[i]);
+    for(int i = 1; i <= n; ++i)nums[i] = make_pair(arr[i],i);
+    sort(nums.begin()+1,nums.end());
+    #ifdef LOCAL
+    printf("ARRAY = ");
+    for(int i = 1; i <= n; ++i)printf(" (%d, %d) ",nums[i].first,nums[i].second);
+    printf("\n");
+    #endif
+    build();
+    while(q--){
+        scanf("%d%d%d",&x,&y,&z);
+        printf("%d\n",arr[query_kth(x,y,z)]);
+    }
     return 0;
 }

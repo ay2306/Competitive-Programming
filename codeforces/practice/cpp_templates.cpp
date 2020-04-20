@@ -1,8 +1,39 @@
-//https://codeforces.com/problemset/problem/507/E
 #include <bits/stdc++.h>
 #include <ext/pb_ds/assoc_container.hpp>
 #include <ext/pb_ds/tree_policy.hpp>
-#define MOD 1000000007
+const long long mod = 1e9+7;
+// const long long mod = 998244353;
+using namespace std;
+// DEBUGGER
+// *
+vector<string> vec_splitter(string s) {
+	s += ',';
+	vector<string> res;
+	while(!s.empty()) {
+		res.push_back(s.substr(0, s.find(',')));
+		s = s.substr(s.find(',') + 1);
+	}
+	return res;
+}
+void debug_out(
+vector<string> __attribute__ ((unused)) args,
+__attribute__ ((unused)) int idx, 
+__attribute__ ((unused)) int LINE_NUM) { cerr << endl; } 
+template <typename Head, typename... Tail>
+void debug_out(vector<string> args, int idx, int LINE_NUM, Head H, Tail... T) {
+	if(idx > 0) cerr << ", "; else cerr << "Line(" << LINE_NUM << ") ";
+	stringstream ss; ss << H;
+	cerr << args[idx] << " = " << ss.str();
+	debug_out(args, idx + 1, LINE_NUM, T...);
+}
+#ifdef LOCAL
+#define debug(...) debug_out(vec_splitter(#__VA_ARGS__), 0, __LINE__, __VA_ARGS__)
+#else
+#define debug(...) 42
+#endif
+// *
+// DEBUGGER
+
 #define test int t; cin>>t; while(t--)
 #define init(arr,val) memset(arr,val,sizeof(arr))
 #define loop(i,a,b) for(int i=a;i<b;i++)
@@ -20,8 +51,6 @@
 #define D deque
 #define ST set
 #define MS multiset
-#define M map
-#define UM unordered_map
 #define mp make_pair
 #define pb emplace_back
 #define pf push_front
@@ -35,14 +64,19 @@
 #define FILE_READ_OUT freopen("output.txt","w",stdout);
 #define all(a) a.begin(),a.end()
 #define ld long double
-using namespace std;
-// For ordered_set
-using namespace __gnu_pbds;
-template <typename T>
-using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-const ll N = 1e5 + 100;
-const ll inf = 1e9;
-const double pi = acos(-1);
+#define sz(x) (int)((x).size())
+#define square(x) ((x)*(x))
+#define cube(x) ((x)*(x)*(x))
+#define distance(a,b,c,d) ((a-c)*1LL*(a-c)+(b-d)*1LL*(b-d))
+#define range(i,x,y) ((x <= i) && (i <= y))
+#define SUM(a) accumulate(a.begin(),a.end(),0LL)
+#define lb lower_bound
+#define ub upper_bound
+#define REV reverse
+#define seive(N) int pr[N]; void preSieve(){for(int i = 2; i < N; ++i){if(!pr[i])for(int j = i; j < N; j+=i)pr[j]=i;}}
+#define modInv(N) ll inv[N]; void preModInv(){inv[0]=0;inv[1]=1;for(int i = 2; i < N; ++i)inv[i] = mod-mod/i*inv[mod%i]%mod;}
+#define fact(N) ll fact[N]; void preFact(){fact[0] = 1,fact[1] = 1; for(int i = 2; i < N; ++i)fact[i]=fact[i-1]*i%mod;}
+#define inFact(N) ll ifact[N]; void preiFact(){ifact[1] = 1; for(int i = 2; i < N; ++i)ifact[i]=ifact[i-1]*inv[i]%mod;}
 // pair operation
 template<class T, class U>istream& operator>>(istream& in, pair<T,U> &rhs){in >> rhs.first;in >> rhs.second;return in;}
 template<class T, class U>ostream& operator>>(ostream& out,const pair<T,U> &rhs){out << rhs.first;out << " ";out << rhs.second;return out;}
@@ -57,78 +91,20 @@ template<class T>ostream& operator<<(ostream& out, const set<T> &a){for(auto &i:
 template<class T>ostream& operator<<(ostream& out, const unordered_set<T> &a){for(auto &i: a)cout << i << " ";return out;}
 template<class T>ostream& operator<<(ostream& out, const multiset<T> &a){for(auto &i: a)cout << i << " ";return out;}
 // MAP
-template<class T,class U>ostream& operator<<(ostream& out, const map<T,U> &a){for(auto &i: a)cout << "(" << i.first << ", " << i.second << "(\n";return out;}
-template<class T,class U>ostream& operator<<(ostream& out, const unordered_map<T,U> &a){for(auto &i: a)cout << "(" << i.first << ", " << i.second << "(\n";return out;}
+template<class T,class U>ostream& operator<<(ostream& out, const map<T,U> &a){for(auto &i: a)cout << "(" << i.first << ", " << i.second << ")\n";return out;}
+template<class T,class U>ostream& operator<<(ostream& out, const unordered_map<T,U> &a){for(auto &i: a)cout << "(" << i.first << ", " << i.second << ")\n";return out;}
 
-int disR[N],cntR[N],parent[N],vis[N];
-int n,m,a,b,c;
-V<PII> g[N];
-V<pair<PII,int>> e;
+using namespace __gnu_pbds;
+template <typename T>
+using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
 
-void dfs(int s = 1, int p = -1, int dis = 0, int cnt = 0){
-	parent[s] = p;
-	int choice = -1;
-	int cnt1 = -1;
-	vis[s] = 1;
-	int cur;
-	for(auto &i: g[s]){
-		if(vis[i.F])continue;
-		// printf("cur = %d adj data node = %d, disR = %d, cntR = %d\n",s,i.F,disR[i.F],cntR[i.F]);
-		if(dis + disR[i.F] + 1 == disR[1] && cnt+cntR[i.F]+i.S > cnt1){
-			cnt1 = cnt+cntR[i.F]+i.S;
-			choice = i.F;
-			cur = i.S;
-		}
-	}
-	if(choice != -1)dfs(choice,s,dis+1,cnt+cur);
-}
+const long long N = 1e5 + 100;
+const long long inf = 1e9;
+const long double pi = acos(-1);
+
 
 void solve(int test_case){
-	scanf("%d%d",&n,&m);
-	loop(i,0,m){
-		scanf("%d%d%d",&a,&b,&c);
-		g[a].pb(b,c);
-		g[b].pb(a,c);
-		e.pb(mp(a,b),c);
-	}
-	queue<int> q;
-	q.push(n);
-	vis[n] = 1;
-	while(q.size()){
-		int s = q.front();
-		q.pop();
-		for(auto &i: g[s]){
-			if(vis[i.F])continue;
-			disR[i.F] = disR[s]+1;
-			cntR[i.F]+=(i.S);
-			q.push(i.F);
-			vis[i.F]++;
-		}
-	}
-	memset(vis,0,sizeof(vis));
-	// cout << disR[1] << "\n";
-	dfs();
-	set<PII> c;
-	int cur = n;
-	while(parent[cur] != -1){
-		// cout << cur << " " << parent[cur] << "\n";
-		c.insert(mp(cur,parent[cur]));
-		cur = parent[cur];
-	}
-	V<P<PII,int>> changes;
-	for(auto &i: e){
-		if(c.find(mp(i.F.F,i.F.S)) != c.end() || c.find(mp(i.F.S,i.F.F)) != c.end()){
-			if(i.S == 0){
-				changes.pb(mp(i.F.F,i.F.S),1);
-			}
-		}else if(i.S){
-				changes.pb(mp(i.F.F,i.F.S),0);
-		}
-	}
-	printf("%d\n",int(changes.size()));
-	for(auto &i: changes){
-		printf("%d %d %d\n",i.F.F,i.F.S,i.S);
-	}
+
 }
 
 int main(){

@@ -38,7 +38,10 @@ i = 0
 while i < 10:
     digits.append(str(i))
     i = i + 1
-writeNumber(1)
-n=getNumber(10,500)
-writeNumber(n)
-writeArray(getArray(n,-10000000,10000000))
+t = getNumber(1,10)
+t = 1
+writeNumber(t)
+for i in range(t):
+    n=getNumber(1,10**18)
+    writeNumber(n)
+# writeArray(getArray(n,1,10))
