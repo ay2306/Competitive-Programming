@@ -1,94 +1,68 @@
-#include <bits/stdc++.h>
-//For ordered_set
-#include <ext/pb_ds/assoc_container.hpp>
-#include <ext/pb_ds/tree_policy.hpp>
-#define MOD 1000000007
-#define test int t; cin>>t; while(t--)
-#define init(arr,val) memset(arr,val,sizeof(arr))
-#define loop(i,a,b) for(int i=a;i<b;i++)
-#define loopr(i,a,b) for(int i=a;i>=b;i--)
-#define loops(i,a,b,step) for(int i=a;i<b;i+=step)
-#define looprs(i,a,b,step) for(int i=a;i>=b;i-=step)
-#define ull unsigned long long int
-#define ll long long int
-#define P pair
-#define PLL pair<long long, long long>
-#define PII pair<int, int>
-#define PUU pair<unsigned long long int, unsigned long long int>
-#define L list
-#define V vector
-#define D deque
-#define ST set
-#define MS multiset
-#define M map
-#define UM unordered_map
-#define mp make_pair
-#define pb push_back
-#define pf push_front
-#define MM multimap
-#define F first
-#define S second
-#define IT iterator
-#define RIT reverse_iterator
-#define FAST ios_base::sync_with_stdio(false);cin.tie();cout.tie();
-#define FILE_READ_IN freopen("input.txt","r",stdin);
-#define FILE_READ_OUT freopen("output.txt","w",stdout);
-#define all(a) a.begin(),a.end()
-#define ld long double
+//https://codeforces.com/problemset/problem/208/E
+#include<bits/stdc++.h>
 using namespace std;
-// For ordered_set
-using namespace __gnu_pbds;
-template <typename T>
-using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-const ll N = 1e5+10;
-const ll inf = 1e9;
-const double pi = acos(-1);
-int ancestor[20][N];
-V<int> adj[N];
-int level[N];
-void init_dfs(int s, int p = -1){
-    ancestor[0][s] = p;
-    if(p == -1)level[s] = 0;
-    else level[s] = level[p]+1;
-    for(auto i: adj[s]){
-        init_dfs(i,s);
+const int N = 1e5+10;
+const int LN = 17;
+int sub[N],anc[N][LN],lev[N],ans[N];
+vector<int> g[N],v[N];
+//p,index
+vector<pair<int,int>> queries[N];
+int n,q,a,b;
+void dfs(int s = 1, int p = 0){
+    sub[s] = 1;
+    for(int &i: g[s]){
+        anc[i][0] = s;
+        lev[i] = lev[s]+1;
+        dfs(i,s);
+        if(sub[i] > sub[g[s][0]])swap(g[s][0],i);
     }
+
+}
+
+void dsu(int s = 1){
+    if(g[s].size() == 0)return;
+    dsu(g[s][0]);
+    swap(v[s],v[g[s][0]]);
+    for(int &i: g[s]){
+        if(i == g[s][0])continue;
+        dsu(i);
+        for(int j = 0; j < v[i].size(); ++j){
+            if(j == v[s].size())v[s].emplace_back(v[i][j]);
+            else v[s][j]+=v[i][j];
+        }
+    }
+    v[s].insert(v[s].begin(),1);
+    for(auto &i: queries[s])if(i.first < v[s].size())ans[i.second]=v[s][i.first]-1;
 }
 
 void pre(){
-    fill(ancestor[0],ancestor[0]+N,-2);
-    loop(i,1,N)if(ancestor[0][i] == -2)init_dfs(i);
-    loop(j,1,20){
-        loop(i,1,N){
-            ancestor[j][i] = ancestor[j-1][ancestor[j-1][i]];
-        }
+    for(int j = 1; j < LN; ++j){
+        for(int i = 1; i <= n; ++i)anc[i][j] = anc[anc[i][j-1]][j-1];
     }
 }
 
-int lca(int a, int b){
-    if(level[a] > level[b])swap(a,b);
-    int diff = level[b]-level[a];
-    loop(j,0,20){
-        if((1<<j)&diff)a=ancestor[j][a];
-    }
-    loopr(j,19,0){
-        if(ancestor[j][a] != ancestor[j][b]){
-            b = ancestor[j][b];
-            a = ancestor[j][a];
-        }
-    }
-    return ancestor[0][a];
+int kth_parent(int a,int k){
+    for(int i = 0; i < LN; ++i)if((k>>i)&1)a=anc[a][i];
+    return a;
 }
-
 
 int main(){
-    pre();
-    int n;
-    cin >> n;
-    loop(i,1,n+1){
-        int a;
-        cin >> a;
-        if(a != 0)adj[a].pb(i);
+    vector<int> ind;
+    scanf("%d",&n);
+    for(int i = 1; i <= n; ++i){
+        v[i].emplace_back(1);
+        scanf("%d",&a);
+        if(a)g[a].emplace_back(i);
+        else ind.emplace_back(i);
     }
-   return 0;
+    for(auto &i: ind)dfs(i);
+    pre();
+    scanf("%d",&q);
+    for(int i = 0; i < q; ++i){
+        scanf("%d%d",&a,&b);
+        queries[kth_parent(a,b)].emplace_back(b,i);
+    }
+    for(auto &i: ind)dsu(i);
+    for(int i = 0; i < q; ++i)printf("%d ",ans[i]);
+    return 0;
 }

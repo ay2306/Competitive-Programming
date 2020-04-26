@@ -1,0 +1,10 @@
+A = "d"
+echo $1
+echo $2
+if [ $1 == $A ] 
+then
+g++ -DLOCAL $2.cpp
+else
+g++ $1.cpp
+fi
+./a.out < inp

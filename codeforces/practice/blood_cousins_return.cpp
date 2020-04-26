@@ -68,7 +68,8 @@ const double pi = acos(-1);
 unordered_map<int,vector<pair<int,int>>> queries;
 V<int> g[N];
 V<int> parent(N,-1);
-vector<set<string>> v[N];
+vector<set<int>> v[N];
+map<string,int> names;
 vector<int> ans;
 int vis[N];
 int findParent(int x){
@@ -88,7 +89,7 @@ void join(int a, int b){
 		for(auto j: v[p2][i]){
 			if(v[p1].size() > i)v[p1][i].insert(j);
 			else{
-				set<string> oo;
+				set<int> oo;
 				oo.insert(j);
 				v[p1].pb(oo);
 			}
@@ -107,7 +108,7 @@ void dfs(int s = 1, int p = 0){
 	for(auto &i: queries[s]){
 		if(v[pr].size() > i.first)ans[i.second] = v[pr][i.first].size();
 	}
-	set<string> k;
+	set<int> k;
 	v[pr].insert(v[pr].begin(),k);
 	if(s != pr)v[s].clear();
 	for(auto &i: g[s]){
@@ -120,14 +121,16 @@ void dfs(int s = 1, int p = 0){
 void solve(int test_case){
 	int n;
 	cin >> n;
+	int t = 0;
 	loop(i,1,n+1){
 		string a;
 		int p;
 		cin >> a >> p;
+		if(names.count(a) == 0)names[a] = ++t;
 		g[i].pb(p);
 		g[p].pb(i);
-		set<string> k;
-		k.insert(a);
+		set<int> k;
+		k.insert(names[a]);
 		v[i].pb(k);
 	}
 	int q;
@@ -143,7 +146,6 @@ void solve(int test_case){
 }
 
 int main(){
-	FAST
 	int t = 1;
 	//cin >> t;
 	loop(i,1,t+1)solve(i);

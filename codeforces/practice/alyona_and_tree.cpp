@@ -5,11 +5,13 @@ using namespace std;
 const int N = 1e5+10;
 ll ans,arr[N],n,a,b,c;
 vector<pair<ll,int>> g[N];
-void dfs(int s = 1, ll mx = LLONG_MAX, ll mn = LLONG_MIN, ll lev = 0){
-    if(lev > mx || lev < mn)return;
-    printf("node = %d,  mx = %lld, lev = %lld\n",s,mx,lev);
-    ans--,mx = min(mx,lev+abs(arr[s])),mn = max(mn,lev-abs(arr[s]));
-    for(auto &i: g[s])dfs(i.second,mx,mn,lev+i.first);
+void dfs(int s = 1, ll mx = LLONG_MAX, ll lev = 0){
+    #ifdef LOCAL
+    printf("node = %d, parent = %d, mx = %lld, mn = %lld, lev = %lld\n",s,p,mx,mn,lev);
+    #endif
+    if(lev-arr[s] > mx)return;
+    ans--,mx = min(mx,lev);
+    for(auto &i: g[s])dfs(i.second,mx,lev+i.first);
 }
 
 int main(){
