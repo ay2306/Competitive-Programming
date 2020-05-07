@@ -3,6 +3,7 @@
 #include <ext/pb_ds/tree_policy.hpp>
 const long long mod = 1e9+7;
 // const long long mod = 998244353;
+const long long int special_prime = 982451653
 using namespace std;
 // DEBUGGER
 // *
@@ -77,9 +78,14 @@ void debug_out(vector<string> args, int idx, int LINE_NUM, Head H, Tail... T) {
 #define modInv(N) ll inv[N]; void preModInv(){inv[0]=0;inv[1]=1;for(int i = 2; i < N; ++i)inv[i] = mod-mod/i*inv[mod%i]%mod;}
 #define fact(N) ll fact[N]; void preFact(){fact[0] = 1,fact[1] = 1; for(int i = 2; i < N; ++i)fact[i]=fact[i-1]*i%mod;}
 #define inFact(N) ll ifact[N]; void preiFact(){ifact[1] = 1; for(int i = 2; i < N; ++i)ifact[i]=ifact[i-1]*inv[i]%mod;}
+
+// Randomization
+
+
+
 // pair operation
 template<class T, class U>istream& operator>>(istream& in, pair<T,U> &rhs){in >> rhs.first;in >> rhs.second;return in;}
-template<class T, class U>ostream& operator>>(ostream& out,const pair<T,U> &rhs){out << rhs.first;out << " ";out << rhs.second;return out;}
+template<class T, class U>ostream& operator<<(ostream& out,const pair<T,U> &rhs){out << rhs.first;out << " ";out << rhs.second;return out;}
 template<class T, class U>pair<T,U> operator+(pair<T,U> &a, pair<T,U> &b){return pair<T,U>(a.first+b.first,a.second+b.second);}
 template<class T, class U>pair<T,U> operator-(pair<T,U> &a, pair<T,U> &b){return pair<T,U>(a.first-b.first,a.second-b.second);}
 // Linear STL
@@ -103,6 +109,7 @@ const long long inf = 1e9;
 const long double pi = acos(-1);
 
 
+mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 void solve(int test_case){
 
 }

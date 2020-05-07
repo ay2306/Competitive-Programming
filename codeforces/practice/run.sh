@@ -1,19 +1,11 @@
-g++ temp.cpp -o temp
-g++ tavas_and_malekas.cpp -o tam 
-for i in {0..1}
-do
-echo $i
+g++ tourist_reform.cpp -o ayush
+g++ ritesh_tourist_reform.cpp -o ritesh
+
+# for i in {0..100}
+# do
+# echo "Test #"$i
 python3 test.py
-# echo "Input:"
-# cat input.txt
-# echo " "
-# echo "Expected:"
-(./temp<input.txt) > out1
-# cat out1
-# echo " "
-# echo "My output:"
-(./tam<input.txt) > out2
-# cat out2
-# echo " "
+(./ayush<input.txt)>out1
+(./ritesh<input.txt)>out2
 diff out1 out2
-done
+# done

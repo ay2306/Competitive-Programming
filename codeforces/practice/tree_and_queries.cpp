@@ -1,153 +1,142 @@
-//https://codeforces.com/contest/375/problem/D
-#include <bits/stdc++.h>
-#include <ext/pb_ds/assoc_container.hpp>
-#include <ext/pb_ds/tree_policy.hpp>
-#define MOD 1000000007
-#define test int t; cin>>t; while(t--)
-#define init(arr,val) memset(arr,val,sizeof(arr))
-#define loop(i,a,b) for(int i=a;i<b;i++)
-#define loopr(i,a,b) for(int i=a;i>=b;i--)
-#define loops(i,a,b,step) for(int i=a;i<b;i+=step)
-#define looprs(i,a,b,step) for(int i=a;i>=b;i-=step)
-#define ull unsigned long long int
-#define ll long long int
-#define P pair
-#define PLL pair<long long, long long>
-#define PII pair<int, int>
-#define PUU pair<unsigned long long int, unsigned long long int>
-#define L list
-#define V vector
-#define D deque
-#define ST set
-#define MS multiset
-#define M map
-#define UM unordered_map
-#define mp make_pair
-#define pb emplace_back
-#define pf push_front
-#define MM multimap
-#define F first
-#define S second
-#define IT iterator
-#define RIT reverse_iterator
-#define FAST ios_base::sync_with_stdio(false);cin.tie();cout.tie();
-#define FILE_READ_IN freopen("input.txt","r",stdin);
-#define FILE_READ_OUT freopen("output.txt","w",stdout);
-#define all(a) a.begin(),a.end()
-#define ld long double
-#define random_init mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
-#define shuffle_random(a) random_shuffle(all(a),rng);
+#include<bits/stdc++.h>
 using namespace std;
-// pair operation
-template<class T, class U>istream& operator>>(istream& in, pair<T,U> &rhs){in >> rhs.first;in >> rhs.second;return in;}
-template<class T, class U>ostream& operator>>(ostream& out,const pair<T,U> &rhs){out << rhs.first;out << " ";out << rhs.second;return out;}
-template<class T, class U>pair<T,U> operator+(pair<T,U> &a, pair<T,U> &b){return pair<T,U>(a.first+b.first,a.second+b.second);}
-template<class T, class U>pair<T,U> operator-(pair<T,U> &a, pair<T,U> &b){return pair<T,U>(a.first-b.first,a.second-b.second);}
-// Linear STL
-// VECTOR
-template<class T>istream& operator>>(istream& in, vector<T> &a){for(auto &i: a)cin >> i;return in;}
-template<class T>ostream& operator<<(ostream& out, const vector<T> &a){for(auto &i: a)cout << i << " ";return out;}
-// SET
-template<class T>ostream& operator<<(ostream& out, const set<T> &a){for(auto &i: a)cout << i << " ";return out;}
-template<class T>ostream& operator<<(ostream& out, const unordered_set<T> &a){for(auto &i: a)cout << i << " ";return out;}
-template<class T>ostream& operator<<(ostream& out, const multiset<T> &a){for(auto &i: a)cout << i << " ";return out;}
-// MAP
-template<class T,class U>ostream& operator<<(ostream& out, const map<T,U> &a){for(auto &i: a)cout << "(" << i.first << ", " << i.second << "(\n";return out;}
-template<class T,class U>ostream& operator<<(ostream& out, const unordered_map<T,U> &a){for(auto &i: a)cout << "(" << i.first << ", " << i.second << "(\n";return out;}
+const int K = 340, N = 1e5+10;
 
-// For ordered_set
-
-// Constants
-const ll N = 1e5 + 100;
-const ll inf = 1e9;
-const double pi = acos(-1);
-
-V<pair<int,int>> q[N];
-int col[N], sub[N], tree[(N+1)<<2],cnt[N],n,m,a,b,ans[N];
-V<int> g[N];
-map<int,int> f[N];
-
-void update(int ind, int val, int node = 0, int start = 0, int end = N){
-	if(ind == 0)return;
-	if(start == end){tree[node]=max(0,tree[node]+=val);return;}
-	if(ind <= (start+end >> 1))update(ind,val,2*node+1,start,start+end>>1);
-	else update(ind,val,2*node+2,((start+end)>>1)+1,end);
+inline int read(){
+	int x; char c;
+	while((c=getchar()) < '0' || c > '9');
+	for(x=c-'0';(c=getchar()) >= '0' && c <= '9';)x=x*10+c-'0';
+	return x;
 }
 
-int query(int l, int r, int node = 0, int start = 0, int end = N){
-	if(r < l || l > end || r < start)return 0;
-	if(l <= start && end <= r)return tree[node];
-	return query(l,r,2*node+1,start,(start+end>>1))+query(l,r,2*node+2,((start+end)>>1)+1,end);
+inline void out(int x, char end = ' ',bool first = true){
+	if(x/10)out(x/10,' ',false);
+	putchar(x%10+'0');
+	if(first)putchar(end);
 }
 
-int initD(int s, int p = -1){
+inline int64_t gilbertOrder(int x, int y, int pow, int rotate) {
+	if (pow == 0) {
+		return 0;
+	}
+	int hpow = 1 << (pow-1);
+	int seg = (x < hpow) ? (
+		(y < hpow) ? 0 : 3
+	) : (
+		(y < hpow) ? 1 : 2
+	);
+	seg = (seg + rotate) & 3;
+	const int rotateDelta[4] = {3, 0, 0, 1};
+	int nx = x & (x ^ hpow), ny = y & (y ^ hpow);
+	int nrot = (rotate + rotateDelta[seg]) & 3;
+	int64_t subSquareSize = int64_t(1) << (2*pow - 2);
+	int64_t ans = seg * subSquareSize;
+	int64_t add = gilbertOrder(nx, ny, pow-1, nrot);
+	ans += (seg == 1 || seg == 2) ? add : (subSquareSize - add - 1);
+	return ans;
+}
+
+class SegmentTree{
+	int tree[N<<2];
+public:
+	SegmentTree(){
+		memset(tree,0,sizeof(tree));
+	}
+	void update(int id, int val, int node = 1, int start = 0, int end = N-1){
+		if(start == end){
+			tree[node] += val;
+			return;
+		}
+		int mid = start+end >> 1;
+		if(id <= mid)update(id,val,node<<1,start,mid);
+		else update(id,val,node<<1|1,mid+1,end);
+		tree[node] = tree[node<<1]+tree[node<<1|1];
+	}
+	int query(int l, int r, int node = 1, int start = 0, int end = N-1){
+		if(l > end || r < start)return 0;
+		if(l <= start && end <= r)return tree[node];
+		int mid = start + end >> 1;
+		int p1 = query(l,r,node<<1,start,mid);
+		int p2 = query(l,r,node<<1|1,mid+1,end);
+		return p1+p2;
+	}
+}s;
+
+struct query{
+	int l,r,ind,freq;
+	query(){}
+	int64_t ord;
+	void cal(){
+		ord = gilbertOrder(l,r,21,0);
+	}
+	bool operator<(const query &rhs)const {
+		// if(l/K != rhs.l/K)return l < rhs.l;
+		// if(l/K &1)return r > rhs.r;
+		// return r < rhs.r;
+		return ord < rhs.ord;
+	}
+}q[N];
+vector<int> g[N];
+int pos[N],sub[N],a[N],arr[N],t,Q,n,x,y,ans[N],curL=1,curR=0;
+int color_frequency[N],color_frequency_frequency[N];
+
+void dfs(int s = 1, int p = -1){
+	pos[s] = t;
 	sub[s] = 1;
-	for(auto &i: g[s])if(i != p)sub[s]+=initD(i,s);
-	return sub[s];
-}
-
-void dfs(int s = 1, int p = -1, bool valid = true){
-	int bigChild = -1, mx = -1;
-	for(auto &i: g[s]){
-		if(i != p && sub[i] > mx)mx=sub[i],bigChild = i;
-	}
-	if(bigChild != -1){
-		dfs(bigChild,s,true);
-		swap(f[bigChild],f[s]);
-	}
-	for(auto &i: g[s]){
-		if(i == p || i == bigChild)continue;
-		dfs(i,s,false);
-		for(auto &j: f[i]){
-			update(f[s][j.first],-1);
-			f[s][j.first]+=j.second;
-			update(f[s][j.first],1);
-		}
-	}
-	update(f[s][col[s]],-1);
-	f[s][col[s]]++;
-	update(f[s][col[s]],1);
-	for(auto &i: q[s]){
-		ans[i.second] = query(i.first,N);
-	}
-	if(valid){
-		update(f[s][col[s]],-1);	
-		f[s][col[s]]--;
-		update(f[s][col[s]],1);	
-		for(auto &i: g[s]){
-			if(i == p || i == bigChild)continue;
-			for(auto &j: f[i]){
-				update(f[s][j.first],-1);
-				f[s][j.first]-=j.second;
-				update(f[s][j.first],1);
-			}
-		}
-		update(f[s][col[s]],-1);	
-		f[s][col[s]]++;
-		update(f[s][col[s]],1);	
+	arr[t++] = s;
+	for(int &i: g[s]){
+		if(i == p)continue;
+		dfs(i,s);
+		sub[s] += sub[i];
 	}
 }
 
-void solve(int test_case){
-	scanf("%d%d",&n,&m);
-	loop(i,1,n+1)scanf("%d",col+i);
-	loop(i,1,n){
-		scanf("%d%d",&a,&b);
-		g[a].pb(b);
-		g[b].pb(a);
-	}
-	loop(i,0,m){
-		scanf("%d%d",&a,&b);
-		q[a].pb(b,i);
-	}
-	// loop(i,1,n+1)sort(all(q[i]));
-	initD(0);
-	dfs();
-	loop(i,0,m)printf("%d ",ans[i]);
+void add(int i){
+	int col = a[i];
+	auto &cf = color_frequency;
+	if(cf[col])s.update(cf[col],-1);
+	cf[col]++;
+	s.update(cf[col],1);
+}
+
+void remove(int i){
+	int col = a[i];
+	auto &cf = color_frequency;
+	if(cf[col])s.update(cf[col],-1);
+	cf[col]--;
+	if(cf[col])s.update(cf[col],1);
 }
 
 int main(){
-	int t = 1;
-	//cin >> t;
-	loop(i,1,t+1)solve(i);
+	n = read();
+	Q = read();
+	for(int i = 1; i <= n; ++i)scanf("%d",a+i);
+	for(int i = 1; i < n; ++i){
+		x = read();
+		y = read();
+		g[x].emplace_back(y);
+		g[y].emplace_back(x);
+	}
+	dfs(1);
+	for(int i = 0; i < Q; ++i){
+		x = read();
+		y = read();
+		q[i].l = pos[x];
+		q[i].r = pos[x]+sub[x]-1;
+		q[i].ind = i;
+		q[i].freq = y;
+		q[i].cal();
+	}
+	sort(q,q+Q);
+	for(int index = 0; index < Q; ++index){
+		int L = q[index].l, R = q[index].r, freq = q[index].freq;
+		while(curL > L)add(arr[--curL]);
+		while(curR < R)add(arr[++curR]);
+		while(curL < L)remove(arr[curL++]);
+		while(curR > R)remove(arr[curR--]);
+		ans[q[index].ind] = s.query(q[index].freq,N-1);
+	}
+	// for(int index = 0; index < Q; ++index)printf("%d\n",ans[index]);
+	for(int index = 0; index < Q; ++index)out(ans[index],'\n');
+	return 0;
 }

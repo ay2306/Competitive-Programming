@@ -39,16 +39,55 @@ while i < 10:
     digits.append(str(i))
     i = i + 1
 
-n = getNumber(4,10)
-k = getNumber(1,5)
-arr = [smallLetters[getNumber(0,25)]]
-s = getString(arr,n//2)
-# print(n,k,s,n-len(s)+1)
-arr = getArray(k,1,n-len(s)+1)
-arr = list(dict.fromkeys(arr))
-arr.sort()
-k = len(arr)
-writeNumber(n)
-writeNumber(k)
-writeString(s)
+
+n = getNumber(3,10)
+edges = {}
+times = {}
+p = [-1 for i in range(n+10)]
+# print(p)
+for i in range(n+10):
+    p[i] = i
+def findParent(x):
+    if p[x] != x:
+        p[x] = findParent(p[x])
+    return p[x]
+def join(a,b):
+    a = findParent(a)
+    b = findParent(b)
+    if a == b:
+        return
+    if p[a] < p[b]:
+        i = a
+        a = b
+        b = a
+    p[b] += p[a]
+    p[a] = b
+comp = n
+while True:
+    i = getNumber(1,n)
+    j = getNumber(1,n)
+    if i == j:
+        continue
+    if i > j:
+        k = i
+        i = j
+        j = k
+    a = (i,j)
+    if a in edges:
+        continue
+    edges[a] = 1
+    # print("adding i = ", i, "j = ", j)
+    pi = findParent(i)
+    pj = findParent(j)
+    if pi != pj:
+        join(i,j)
+        # print(p)
+        comp -= 1
+    if comp == 1:
+        break
+m = len(edges)
+arr = [n,m]
 writeArray(arr)
+for i in edges:
+    writeArray(i)
+  
