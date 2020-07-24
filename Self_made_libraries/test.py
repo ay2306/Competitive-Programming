@@ -17,7 +17,7 @@ def writeNumber(number, file = fopen):
 def getString(arr,length):
     S = ""
     i = 0
-    while i < len(arr):
+    while i < length:
         S = S + arr[random.randint(0,len(arr)-1)]
         i = i + 1
     return S

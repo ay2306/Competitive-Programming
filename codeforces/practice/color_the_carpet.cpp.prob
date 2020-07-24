@@ -1,0 +1,1 @@
+{"group":"local","interactive":false,"local":true,"memoryLimit":1024,"name":"color_the_carpet","srcPath":"/mnt/d/code/Competitive-Programming/codeforces/practice/color_the_carpet.cpp","tests":[{"id":1591742871686,"input":"3 4 4\nENE\nNNEE\nNEE\nENEN\nENN\n","output":""}],"timeLimit":3000,"url":"/mnt/d/code/Competitive-Programming/codeforces/practice/color_the_carpet.cpp"}

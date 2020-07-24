@@ -1,0 +1,1 @@
+{"group":"local","interactive":false,"local":true,"memoryLimit":1024,"name":"Local: CHSTR","srcPath":"/mnt/d/code/Competitive-Programming/codeChef/CHSTR.cpp","tests":[{"id":1593000982138,"input":"1\n5 4\nababa\n2\n1\n3\n4","output":"7\n15\n1\n0"}],"timeLimit":3000,"url":"/mnt/d/code/Competitive-Programming/codeChef/CHSTR.cpp"}

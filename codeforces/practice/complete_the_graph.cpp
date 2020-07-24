@@ -1,110 +1,100 @@
-/*
- ____________________________________________________________
-|                                                            |
-|                   Author: ay2306                           |
-|____________________________________________________________|
-
-*/
-#include <bits/stdc++.h>
-#define MOD 1000000007
-#define test int t; cin>>t; while(t--)
-#define init(arr,val) memset(arr,val,sizeof(arr))
-#define loop(i,a,b) for(int i=a;i<b;i++)
-#define loopr(i,a,b) for(int i=a;i>=b;i--)
-#define loops(i,a,b,step) for(int i=a;i<b;i+=step)
-#define looprs(i,a,b,step) for(int i=a;i>=b;i-=step)
-#define ull unsigned long long int
+ //https://codeforces.com/problemset/problem/715/B
+#include<bits/stdc++.h>
 #define ll long long int
-#define P pair
-#define PLL pair<long long, long long>
-#define PII pair<int, int>
-#define PUU pair<unsigned long long int, unsigned long long int>
-#define L list
-#define V vector
-#define D deque
-#define ST set
-#define MS multiset
-#define M map
-#define UM unordered_map
-#define mp make_pair
-#define pb push_back
-#define pf push_front
-#define MM multimap
-#define F first
-#define S second
-#define IT iterator
-#define RIT reverse_iterator
-#define FAST ios_base::sync_with_stdio(false);cin.tie();cout.tie();
-#define FILE_READ_IN freopen("input.txt","r",stdin);
-#define FILE_READ_OUT freopen("output.txt","w",stdout);
 using namespace std;
+const int N = 1e3;
 
-const ll maxn = 1e5;
-ll n,m,l,s,t;
-V<V<PLL> > adj;
-V<V<ll> > edges;
-V<bool> visited;
-V<ll> dist;
-V<PLL> Data;
-int main(){
-    cin >> n >> m >> l >> s >> t;
-    adj = V<V<PLL> > (n+1);
-    edges = V<V<ll> > (n+1,V<ll> (n+1,-1));
-    visited = V<bool> (n+1,false);
-    dist = V<ll> (n+1,-1);
-    loop(i,0,m){
-      ll a,b,c;
-      cin >> a >> b >> c;
-      adj[a].pb(mp(c,b));
-      adj[b].pb(mp(c,a));
-      edges[a][b] = c;
-      edges[b][a] = c;
-      Data.pb(mp(a,b));
-    }
-    V<ll> parent(n+1,-1);
-    multiset<PLL> ms;
-    dist[s] = 0;
-    ms.insert(mp(0,s));
-    while(ms.size()){
-      ll u = ms.begin()->second;
-      ms.erase(ms.begin());
-      if(visited[u])continue;
-      visited[u] = true;
-      for(auto i: adj[u]){
-        ll v = i.S;
-        ll d = i.F;
-        if(dist[v] == -1 || dist[v] > dist[u] + d){
-          dist[v] = dist[u]+d;
-          ms.insert(mp(dist[v],v));
-          parent[v] = u;
-        }
+struct edge{
+  int a, b;
+  long long w;
+  edge(int a, int b, long long w):a(a),b(b),w(w){}
+};
+
+vector<edge> e;
+vector<int> g[N];
+int n,m,a,b,w,l,s,t,vis[N];
+long long dis[N],parent[N];
+map<pair<int,int>,int> ind;
+vector<int> special;
+vector<int> timeChanged;
+vector<int> specialIncluded[10*N];
+void djikstra(int source){
+  fill(vis,vis+N,false);
+  fill(dis,dis+N,LLONG_MAX);
+  dis[source] = 0;
+  parent[source] = -1;
+  multiset<pair<long long,int>> m;
+  m.emplace(0,source);
+  while(m.size()){
+    int u = m.begin()->second;
+    long long DIS = m.begin()->first;
+    m.erase(m.begin());
+    if(vis[u])continue;
+    vis[u] = 1;
+    for(auto &i: g[u]){
+      int v = u^e[i].a^e[i].b;
+      long long d = e[i].w;
+      if(dis[v] > d+DIS){
+        dis[v] = d+DIS;
+        m.emplace(d+DIS,v);
+        parent[v] = u;
       }
     }
-    V<PLL> eip;
-    ll x = t;
-    while(parent[x] != -1){
-      if(edges[x][parent[x]] == 0)eip.pb(mp(x,parent[x]));
-      x = parent[x];
+  }
+}
+
+int main(){
+  scanf("%d%d%d%d%d",&n,&m,&l,&s,&t);
+  for(int i = 0; i < m; ++i){
+    scanf("%d%d%d",&a,&b,&w);
+    ind[{a,b}] = i;
+    ind[{b,a}] = i;
+    e.emplace_back(a,b,w);
+    if(w){
+      g[a].emplace_back(i);
+      g[b].emplace_back(i);
+    }else{
+      special.emplace_back(i);
     }
-    if(dist[t] + eip.size() > l){
-      printf("NO\n");
-      return 0;
+  }
+  sort(special.begin(),special.end());
+  djikstra(s);
+  if(dis[t] < l)return printf("NO\n"),0;
+  for(auto &i: special){
+    g[e[i].a].emplace_back(i);
+    g[e[i].b].emplace_back(i);
+    e[i].w = 1;
+  }
+  djikstra(s);
+  set<int> inc;
+  if(dis[t] > l)return printf("NO\n"),0;
+  // for(int i = 0 ; i < n; ++i)cout << dis[i] << " ";
+  // cout << endl;
+  while(1){
+    int cur = t, p = parent[t];
+    vector<int> spec;
+    while(~p){
+        int id = ind[{cur,p}];
+        if(binary_search(special.begin(),special.end(),id) && !inc.count(id))spec.emplace_back(id);
+        cur = p;
+        p = parent[p];
     }
-    ll rem = l-dist[t];
-    while(eip.size() > 1){
-      PLL a = eip.back();
-      eip.pop_back();
-      edges[a.F][a.S] = 1;
-      edges[a.S][a.F] = 1;
-      rem--;
-    }
-    PLL a = eip.back();
-    edges[a.F][a.S] = rem;
-    edges[a.S][a.F] = rem;
-    printf("YES\n");
-    for(auto i: Data){
-      if(edges[i.F][i.S] == 0)edges[i.F][i.S] = 100;
-      printf("%lld %lld %lld\n",i.F,i.S,edges[i.F][i.S]);
-    }
-    return 0;
+    if(spec.size() == 0)break;
+    int lst = spec.back();
+    ll ch = l - dis[t];
+    e[spec.back()].w += ch;
+    for(int i: specialIncluded[lst])e[i].w-=ch;
+    inc.emplace(spec.back());
+    spec.pop_back();
+    for(int i: spec)specialIncluded[i].emplace_back(lst);
+
+    djikstra(s);
+  }
+  for(int i : special){
+    if(inc.count(i))continue;
+    e[i].w = (ll)2e9;
+  }
+  printf("YES\n");
+  for(auto i: e)printf("%d %d %lld\n",i.a,i.b,i.w);
+  return 0;
 }

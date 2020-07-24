@@ -1,11 +1,10 @@
-g++ tourist_reform.cpp -o ayush
-g++ ritesh_tourist_reform.cpp -o ritesh
-
+g++ placing_rooks.cpp -o ayush
+g++ harsh.cpp -o harsh
 # for i in {0..100}
 # do
-# echo "Test #"$i
+# echo "Test Number " $i
 python3 test.py
 (./ayush<input.txt)>out1
-(./ritesh<input.txt)>out2
+(./harsh<input.txt)>out2
 diff out1 out2
-# done
+# done 

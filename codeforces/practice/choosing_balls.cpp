@@ -1,85 +1,37 @@
-#include <bits/stdc++.h>
-//For ordered_set
-#include <ext/pb_ds/assoc_container.hpp>
-#include <ext/pb_ds/tree_policy.hpp>
-#define MOD 1000000007
-#define test int t; cin>>t; while(t--)
-#define init(arr,val) memset(arr,val,sizeof(arr))
-#define loop(i,a,b) for(int i=a;i<b;i++)
-#define loopr(i,a,b) for(int i=a;i>=b;i--)
-#define loops(i,a,b,step) for(int i=a;i<b;i+=step)
-#define looprs(i,a,b,step) for(int i=a;i>=b;i-=step)
-#define ull unsigned long long int
-#define ll long long int
-#define P pair
-#define PLL pair<long long, long long>
-#define PII pair<int, int>
-#define PUU pair<unsigned long long int, unsigned long long int>
-#define L list
-#define V vector
-#define D deque
-#define ST set
-#define MS multiset
-#define M map
-#define UM unordered_map
-#define mp make_pair
-#define pb push_back
-#define pf push_front
-#define MM multimap
-#define F first
-#define S second
-#define IT iterator
-#define RIT reverse_iterator
-#define FAST ios_base::sync_with_stdio(false);cin.tie();cout.tie();
-#define FILE_READ_IN freopen("input.txt","r",stdin);
-#define FILE_READ_OUT freopen("output.txt","w",stdout);
-#define all(a) a.begin(),a.end()
-#define ld long double
+//https://codeforces.com/contest/264/problem/C
+#pragma GCC Optimize("O3")
+#pragma GCC Optimize ("unroll-loops")
+#include<bits/stdc++.h>
+#define int long long
 using namespace std;
-// For ordered_set
-using namespace __gnu_pbds;
-template <typename T>
-using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-const ll N = 1e5+10;
-const ll inf = 1e9;
-const double pi = acos(-1);
-
-int main(){
-    FAST
-    int n;
-    cin >> n;
-    int q;
-    cin >> q;
-    V<ll> v(n+1);
-    loop(i,1,n+1)cin >> v[i];
-    V<ll> c(n+1);
-    loop(i,1,n+1)cin >> c[i];
-    while(q--){
-        ll a,b;
-        cin >> a >> b;
-        int pmax = 0, pmin = 0;
-        V<ll> dp(N,LLONG_MIN);
-        dp[0] = 0;
-        loop(i,1,n+1){
-            if(dp[c[i]] != LLONG_MIN){
-                dp[c[i]] = max(dp[c[i]],dp[c[i]] + v[i]*a);
-            }
-            if(pmax != c[i]){
-                dp[c[i]] = max(dp[c[i]],dp[pmax] + v[i]*b);
-            }
-            else{
-                dp[c[i]] = max(dp[c[i]],dp[pmin] + v[i]*b);
-            }
-            if(pmax != c[i]){
-                if(dp[c[i]] > dp[pmax]){
-                    pmin = pmax;
-                    pmax = c[i];
-                }else if(dp[c[i]] > dp[pmin]){
-                    pmin = c[i];
-                }
-            }
-        }
-        cout << dp[pmax] << "\n";
-    }
-   return 0;
+const int N = 1e5+100;
+int dp[N][3],n,q,a,b,val[N],c[N];
+const int LMN = LLONG_MIN/100LL;
+pair<int,int> mx,smx;
+signed main(){
+	scanf("%lld%lld",&n,&q);
+	for(int i = 1; i <= n; ++i)cin >> val[i];
+	for(int i = 1; i <= n; ++i)cin >> c[i];
+	while(q--){
+		scanf("%lld%lld",&a,&b);
+		for(int i = 0; i < N; ++i)fill(dp[i],dp[i]+3,LMN);
+		mx = pair<int,int> (LMN,LMN);
+		smx = pair<int,int> (LMN,LMN);
+		for(int i = 1; i <= n; ++i){
+			dp[c[i]][1] = max(dp[c[i]][1],*max_element(dp[c[i]],dp[c[i]]+3) + val[i]*a);
+			dp[c[i]][0] = max(dp[c[i]][0],val[i]*b);
+			if(mx.first != c[i])dp[c[i]][2] = max(dp[c[i]][2],mx.second+val[i]*b);
+			else dp[c[i]][2] = max(dp[c[i]][2],smx.second+val[i]*b);
+			int m = *max_element(dp[c[i]],dp[c[i]]+3);
+			if(m > mx.second && mx.first == c[i])mx.second = m;
+			else if(m > mx.second){
+				smx = mx;
+				mx = make_pair(c[i],m);
+			}
+			else if(m > smx.second && smx.first == c[i])smx.second = m;
+			else if(m > smx.second && mx.first != c[i])smx.second = m;
+		}
+		printf("%lld\n",max(0LL,mx.second));
+	}
+	return 0;
 }

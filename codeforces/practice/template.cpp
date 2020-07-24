@@ -109,12 +109,12 @@ const long long inf = 1e9;
 const long double pi = acos(-1);
 
 
-mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 void solve(int test_case){
 
 }
 
 int main(){
+	mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 	int t = 1;
 	//cin >> t;
 	loop(i,1,t+1)solve(i);

@@ -1,160 +1,132 @@
-#include <bits/stdc++.h>
-#include <ext/pb_ds/assoc_container.hpp>
-#include <ext/pb_ds/tree_policy.hpp>
-#define MOD 1000000007
-#define test int t; cin>>t; while(t--)
-#define init(arr,val) memset(arr,val,sizeof(arr))
-#define loop(i,a,b) for(int i=a;i<b;i++)
-#define loopr(i,a,b) for(int i=a;i>=b;i--)
-#define loops(i,a,b,step) for(int i=a;i<b;i+=step)
-#define looprs(i,a,b,step) for(int i=a;i>=b;i-=step)
-#define ull unsigned long long int
-#define ll long long int
-#define P pair
-#define PLL pair<long long, long long>
-#define PII pair<int, int>
-#define PUU pair<unsigned long long int, unsigned long long int>
-#define L list
-#define V vector
-#define D deque
-#define ST set
-#define MS multiset
-#define M map
-#define UM unordered_map
-#define mp make_pair
-#define pb emplace_back
-#define pf push_front
-#define MM multimap
-#define F first
-#define S second
-#define IT iterator
-#define RIT reverse_iterator
-#define FAST ios_base::sync_with_stdio(false);cin.tie();cout.tie();
-#define FILE_READ_IN freopen("input.txt","r",stdin);
-#define FILE_READ_OUT freopen("output.txt","w",stdout);
-#define all(a) a.begin(),a.end()
-#define ld long double
-#define random_init mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
-#define shuffle_random(a) random_shuffle(all(a),rng);
+#include<bits/stdc++.h>
 using namespace std;
-// pair operation
-template<class T, class U>istream& operator>>(istream& in, pair<T,U> &rhs){in >> rhs.first;in >> rhs.second;return in;}
-template<class T, class U>ostream& operator>>(ostream& out,const pair<T,U> &rhs){out << rhs.first;out << " ";out << rhs.second;return out;}
-template<class T, class U>pair<T,U> operator+(pair<T,U> &a, pair<T,U> &b){return pair<T,U>(a.first+b.first,a.second+b.second);}
-template<class T, class U>pair<T,U> operator-(pair<T,U> &a, pair<T,U> &b){return pair<T,U>(a.first-b.first,a.second-b.second);}
-// Linear STL
-// VECTOR
-template<class T>istream& operator>>(istream& in, vector<T> &a){for(auto &i: a)cin >> i;return in;}
-template<class T>ostream& operator<<(ostream& out, const vector<T> &a){for(auto &i: a)cout << i << " ";return out;}
-// SET
-template<class T>ostream& operator<<(ostream& out, const set<T> &a){for(auto &i: a)cout << i << " ";return out;}
-template<class T>ostream& operator<<(ostream& out, const unordered_set<T> &a){for(auto &i: a)cout << i << " ";return out;}
-template<class T>ostream& operator<<(ostream& out, const multiset<T> &a){for(auto &i: a)cout << i << " ";return out;}
-// MAP
-template<class T,class U>ostream& operator<<(ostream& out, const map<T,U> &a){for(auto &i: a)cout << "(" << i.first << ", " << i.second << "(\n";return out;}
-template<class T,class U>ostream& operator<<(ostream& out, const unordered_map<T,U> &a){for(auto &i: a)cout << "(" << i.first << ", " << i.second << "(\n";return out;}
+const long long mod = 1e9+7, N = 10010; 
 
-// For ordered_set
-using namespace __gnu_pbds;
-template <typename T>
-using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
+long long fact[N], ifact[N];
 
-// Constants
-const ll N = 5e3 + 100;
-const ll inf = 1e9;
-const double pi = acos(-1);
-ll cnt [N];
-ll cnt2[N];
-ll inv [N];
-ll fct [N];
-ll ans [N];
-
-ll power(ll a, ll n){
-	if(n == 0)return 1;
-	if(n == 1)return a%MOD;
-	ll p = power(a,n>>1);
-	p*=p;
-	p%=MOD;
-	if(n&1)p*=a;
-	p%=MOD;
+long long power(long long a, long long n){
+	if(n == 0)return 1LL;
+	if(n == 1)return a%mod;
+	long long p = power(a,n>>1);
+	p = p * p % mod;
+	if(n & 1)p = p * a % mod;
 	return p;
 }
 
-V<int> setOrder(vector<char> &s){
-	vector<int> z(s.size(),0);
-	int n = s.size();
-	for(int i = 1, l = 0, r = 0; i < n; ++i){
-		if(i <= r){
-			z[i] = min(r-i+1,z[i-l]);
-		}
-		while(i+z[i] < n && s[z[i]] == s[i+z[i]])z[i]++;
-		if(i+z[i]-1 > r){
-			l = i;
-			r = i+z[i]-1;
-		}
-	}
-	return z;
-}
-
 void pre(){
-	fct[0] = 1;
-	fct[1] = 1;
-	inv[0] = 1;
-	inv[1] = 1;
-	loop(i,2,N){
-		fct[i] = (i*fct[i-1])%MOD;
-		inv[i] = power(fct[i],MOD-2);
-	}
+	fact[0] = 1;
+	ifact[0] = 1;
+	fact[1] = 1;
+	ifact[1] = 1;
+	for(int i = 2; i < N; ++i)fact[i] = i * fact[i-1] % mod, ifact[i] = ifact[i-1] * power(i,mod-2) % mod;
 }
 
-ll ncr(int n, int r){
+long long ncr(long long n, long long r){
 	if(r < 0 || r > n)return 0;
-	return ((fct[n]*inv[r])%MOD * inv[n-r])%MOD;
+	return fact[n] * ifact[r] % mod * ifact[n-r] % mod;
 }
 
-void solve(int test_case){
-	int n,Q;
-	memset(cnt2,0,sizeof(cnt2));
-	memset(ans,0,sizeof(ans));
-	cin >> n >> Q;
-	string bs;
-	cin >> bs;
-	vector<char> a(all(bs));
-	loop(i,0,n){
-		vector<int> z = setOrder(a);
-		memset(cnt,0,sizeof(cnt));
-		for(auto &x: z){
-			cnt[0]++;
-			cnt[x+1]--;
-		}
-		loop(i,1,n+1){
-			cnt[i] += cnt[i-1];
-			cnt2[cnt[i]]++;
-		}
-		ans[1] += n-i;	
-		a.erase(a.begin());
+vector<int> suffix_array(string &s)
+{
+    int n = s.size(), N = n + 256;
+    vector<int> sa(n), ra(n);
+    for(int i = 0; i < n; i++) sa[i] = i, ra[i] = s[i];
+    for(int k = 0; k < n; k ? k *= 2 : k++)
+    {
+        vector<int> nsa(sa), nra(n), cnt(N);
+        for(int i = 0; i < n; i++) nsa[i] = (nsa[i] - k + n) % n;
+        for(int i = 0; i < n; i++) cnt[ra[i]]++;
+        for(int i = 1; i < N; i++) cnt[i] += cnt[i - 1];
+        for(int i = n - 1; i >= 0; i--) sa[--cnt[ra[nsa[i]]]] = nsa[i];
+
+        int r = 0;
+        for(int i = 1; i < n; i++)
+        {
+            if(ra[sa[i]] != ra[sa[i - 1]]) r++;
+            else if(ra[(sa[i] + k) % n] != ra[(sa[i - 1] + k) % n]) r++;
+            nra[sa[i]] = r;
+        }
+        ra = nra;
+    }
+    return sa;
+}
+
+vector<int> kasai(string &s, vector<int> &sa)
+{
+    int n = s.size(), k = 0;
+    vector<int> ra(n), lcp(n);
+    for(int i = 0; i < n; i++) ra[sa[i]] = i;
+    for(int i = 0; i < n; i++)
+    {
+        if(k) k--;
+        if(ra[i] == n - 1) {k = 0; continue;}
+        int j = sa[ra[i] + 1];
+        while(k < n && s[(i + k) % n] == s[(j + k) % n]) k++;
+        lcp[ra[i]] = k;
+        if(ra[(sa[ra[i]] + 1) % n] > ra[(sa[ra[j]] + 1) % n]) k = 0;
+    }
+    return lcp;
+}
+
+int solve(){
+	int n,q;
+	cin >> n >> q;
+	long long single = n * 1LL * (n+1) >> 1;
+	string s;
+    cin >> s;
+    s+="$";
+    auto sa = suffix_array(s);
+    auto lcp = kasai(s,sa);
+    lcp.erase(lcp.begin());
+    lcp.pop_back();
+    stack<int> st;
+    vector<vector<int>> P(n+1);
+    vector<int> L(n,-1), R(n,n-1);
+    vector<long long> cnt(n+10),ans(n+10);
+    for(int i = 0; i < lcp.size(); ++i){
+        while(st.size() && lcp[st.top()] >= lcp[i])st.pop();
+        if(st.size())L[i] = st.top();
+        st.push(i);
+    }
+    while(st.size())st.pop();
+    for(int i = n-2; i >= 0; --i){
+        while(st.size() && lcp[st.top()] >= lcp[i])st.pop();
+        if(st.size())R[i] = st.top();
+        st.push(i);
+    }
+    for(int i = 0; i < lcp.size(); ++i)P[lcp[i]].emplace_back(i);
+    for(int V = 1; V <= n; ++V){
+        int right = -1;
+        for(int i: P[V]){
+            if(i < right)continue;
+            int v = V;
+            if(~L[i])v = min(v,V-lcp[L[i]]);
+            if(R[i] != n-1)v = min(v,V-lcp[R[i]]);
+            single -= (R[i]-L[i])*1LL*v;
+            cnt[R[i]-L[i]] += v;
+            right = R[i];
+        }
+    }
+	cnt[1] = single;
+	for(int i = 0; i < ans.size(); ++i){
+		for(int j = 0; j < ans.size(); ++j)ans[i] = (ans[i] + ncr(j,i) * cnt[j] % mod) % mod;
 	}
-	loop(i,1,n+1){
-		loop(j,1,i+1){
-			ans[j+1] += (cnt2[i] * ncr(i,j))%MOD;
-			ans[j+1] %= MOD;
-		}
-	} 
-	while(Q--){
-		ll k;
+	while(q--){
+		int k ;
 		cin >> k;
-		if(k > n){
-			cout << "0\n";
-		}else{
-			cout << ans[k] << "\n";
-		}
+		if(k > ans.size())cout << 0 << "\n";
+		else cout << ans[k] << "\n";
 	}
+	return 0;
 }
 
 int main(){
-	FAST
+	ios_base::sync_with_stdio(false);
+	cin.tie(nullptr);
+	cout.tie(nullptr);
 	pre();
-	int t = 1;
+	int t;
 	cin >> t;
-	loop(i,1,t+1)solve(i);
+	while(t--)solve();
+	return 0;
 }

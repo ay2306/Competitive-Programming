@@ -1,136 +1,63 @@
-#include <bits/stdc++.h>
-#include <ext/pb_ds/assoc_container.hpp>
-#include <ext/pb_ds/tree_policy.hpp>
-#define MOD 1000000007
-#define test int t; cin>>t; while(t--)
-#define init(arr,val) memset(arr,val,sizeof(arr))
-#define loop(i,a,b) for(int i=a;i<b;i++)
-#define loopr(i,a,b) for(int i=a;i>=b;i--)
-#define loops(i,a,b,step) for(int i=a;i<b;i+=step)
-#define looprs(i,a,b,step) for(int i=a;i>=b;i-=step)
-#define ull unsigned long long int
-#define ll long long int
-#define P pair
-#define PLL pair<long long, long long>
-#define PII pair<int, int>
-#define PUU pair<unsigned long long int, unsigned long long int>
-#define L list
-#define V vector
-#define D deque
-#define ST set
-#define MS multiset
-#define M map
-#define UM unordered_map
-#define mp make_pair
-#define pb emplace_back
-#define pf push_front
-#define MM multimap
-#define F first
-#define S second
-#define IT iterator
-#define RIT reverse_iterator
-#define FAST ios_base::sync_with_stdio(false);cin.tie();cout.tie();
-#define FILE_READ_IN freopen("input.txt","r",stdin);
-#define FILE_READ_OUT freopen("output.txt","w",stdout);
-#define all(a) a.begin(),a.end()
-#define ld long double
-#define random_init mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
-#define shuffle_random(a) random_shuffle(all(a),rng);
+#pragma GCC Optimize("O3")
+#include<bits/stdc++.h>
 using namespace std;
-// pair operation
-template<class T, class U>istream& operator>>(istream& in, pair<T,U> &rhs){in >> rhs.first;in >> rhs.second;return in;}
-template<class T, class U>ostream& operator>>(ostream& out,const pair<T,U> &rhs){out << rhs.first;out << " ";out << rhs.second;return out;}
-template<class T, class U>pair<T,U> operator+(pair<T,U> &a, pair<T,U> &b){return pair<T,U>(a.first+b.first,a.second+b.second);}
-template<class T, class U>pair<T,U> operator-(pair<T,U> &a, pair<T,U> &b){return pair<T,U>(a.first-b.first,a.second-b.second);}
-// Linear STL
-// VECTOR
-template<class T>istream& operator>>(istream& in, vector<T> &a){for(auto &i: a)cin >> i;return in;}
-template<class T>ostream& operator<<(ostream& out, const vector<T> &a){for(auto &i: a)cout << i << " ";return out;}
-// SET
-template<class T>ostream& operator<<(ostream& out, const set<T> &a){for(auto &i: a)cout << i << " ";return out;}
-template<class T>ostream& operator<<(ostream& out, const unordered_set<T> &a){for(auto &i: a)cout << i << " ";return out;}
-template<class T>ostream& operator<<(ostream& out, const multiset<T> &a){for(auto &i: a)cout << i << " ";return out;}
-// MAP
-template<class T,class U>ostream& operator<<(ostream& out, const map<T,U> &a){for(auto &i: a)cout << "(" << i.first << ", " << i.second << "(\n";return out;}
-template<class T,class U>ostream& operator<<(ostream& out, const unordered_map<T,U> &a){for(auto &i: a)cout << "(" << i.first << ", " << i.second << "(\n";return out;}
-
-// For ordered_set
-using namespace __gnu_pbds;
-template <typename T>
-using ord_set = tree<T,null_type,less<T>,rb_tree_tag,tree_order_statistics_node_update>;
-
-// Constants
-const ll N = 1e5 + 100;
-const ll inf = 1e9;
-const double pi = acos(-1);
-vector<int> zf(string &a, string &b){
-	string pat = a+"#"+b;
-	int n = pat.size();
-	vector<int> z(pat.size());
-	for(int i = 0,r = 0,l=0; i < pat.size(); ++i){
-		if(i <= r)z[i] = min(r-i+1,z[i-l]);
-		while(z[i]+i < pat.size() && pat[z[i]] == pat[z[i]+i])z[i]++;
-		
-		if(z[i]+i-1 > r)l=i,r=z[i]+i-1;
+const int N = 2e5;
+int z[N],zr[N];
+int max_till_here[N];
+bool check(vector<char> &a, vector<char> &b, string &c){
+	a.insert(a.begin(),'#');
+	b.insert(b.begin(),'#');
+	for(int i = 0; i < c.size(); ++i){
+		a.insert(a.begin(),c[c.size()-1-i]);
+		b.insert(b.begin(),c[i]);
 	}
-	return vector<int> (z.begin()+a.size()+1,z.end());
-}
-
-void solve(int test_case){
-	string a;
-	cin >> a;
-	string ra = a;
-	reverse(all(ra));
-	int q;
-	cin >> q;
-	int ans = 0;
-	while(q--){
-		string b;
-		cin >> b;
-		if(b.size() < 2)continue;	
-		vector<int> z = zf(b,a);
-		reverse(all(b));
-		vector<int> zr = zf(b,ra);
-		vector<int> pref(b.size()+1,INT_MAX);
-		vector<int> suff(b.size()+1,-1);
-		int pmin=0,smin=0;
-		loop(i,0,a.size()){
-			for(int j = pmin; j <= z[i]; ++j)pref[j]=i;
-			pmin=max(z[i]+1,pmin);
-			int ending = a.size()-1-i;
-			int starting = ending-(zr[i]-1);
-			//from starting index we have suffix of z[i] length, 
-			// and since ending decreases eventually therefore 
-			// this is the rightmost index
-			for(int j = zr[i],k=0; j > smin; --j,k++)suff[j]=(starting+k);
-			smin = max(zr[i],smin);
-			// suff[z[i]] = max(suff[zr[i]],int(a.size()-(i+1+z[i]))-1);
-		}
-		// cout << "STRING " << b << "\n";
-		// cout << "Z " << z << "\n";
-		// cout << "PREF " << pref << "\n";
-		// cout << "ZR " << zr << "\n";
-		// cout << "suff " << suff << "\n";
-		if(pref[b.size()] != INT_MAX){
-			ans++;
-		}else{
-			loop(i,1,b.size()+1){
-				if(pref[i] == INT_MAX || suff[b.size()-i] == -1)continue;
-				// printf("i = %d, pref[i] = %d, suff[b.size()-i] = %d\n",i,pref[i],suff[b.size()-i]);
-				int endIND = i+pref[i]-1;
-				if(suff[b.size()-i] > endIND){
-					ans++;
-					break;
-				}
-			}
-		}
+	memset(zr,0,sizeof(zr));
+	memset(z,0,sizeof(z));
+	memset(max_till_here,0,sizeof(max_till_here));
+	int zsize = a.size();
+	for(int i = 1, l = 0, r = 0, lr = 0, rr = 0; i < zsize; ++i){
+		if(i <= r)z[i] = min(z[i-l],r-i+1);
+		if(i <= rr)zr[i] = min(zr[i-lr],rr-i+1);
+		while(i+z[i] < zsize && a[z[i]] == a[z[i]+i])z[i]++;
+		while(i+zr[i] < zsize && b[zr[i]] == b[zr[i]+i])zr[i]++;
+		if(i+z[i]-1 > r)l=i,r=z[i]+i-1;
+		if(i+zr[i]-1 > rr)lr=i,rr=zr[i]+i-1;
 	}
-	cout << ans << "\n";
+	int st = 0;
+	for(;a[st++]!='#';);
+	int mx = 0;
+	int csize = c.size();
+	reverse(zr+st,zr+zsize);
+	a.erase(a.begin(),a.begin()+st);
+	b.erase(b.begin(),b.begin()+st);
+	for(int i = st; i < zsize; ++i){
+		max_till_here[i] = mx;
+		if(zr[i] == csize || z[i] == csize)return true;
+		int prev_ind = i - zr[i] + 1;
+		int rem = csize - zr[i];
+		prev_ind = prev_ind-rem+1;
+		if(prev_ind >= st && zr[i] + max_till_here[prev_ind] >= csize)return true;
+		mx = max(mx,z[i]); 
+
+	}
+	if(mx == a.size())return true;
+	return false;
 }
 
 int main(){
-	FAST
-	int t = 1;
-	//cin >> t;
-	loop(i,1,t+1)solve(i);
+	ios_base::sync_with_stdio(false);
+	cout.tie(0);
+	cin.tie(0);
+	string a,s;
+	cin >> a;
+	vector<char>arr(a.begin(),a.end()),rev(a.begin(),a.end());
+	reverse(rev.begin(),rev.end());
+	int m,ans=0;
+	cin >> m;
+	while(m--){
+		cin >> s;
+		if(s.size() > a.size() || s.size() < 2)continue;
+		ans+=check(arr,rev,s);
+	}
+	return cout << ans << "\n", 0;
 }

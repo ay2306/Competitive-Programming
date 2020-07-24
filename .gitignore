@@ -3,3 +3,6 @@
 *.zip
 *.out
 *.cpp.tcs
+.cph
+in*
+out*

@@ -1,69 +1,46 @@
-struct chtDynamics{
-    bool isMax;
-    chtDynamics(bool isthisMax = false):isMax(isthisMax){}
-    struct line{
-        ll m,b;
-        ld x;
-        ll val;
-        enum Type{Line,maxQuery,minQuery} type;
-        line(ll _m = 0, ll _b = 0): m(_m),b(_b),val(0),x(-inf),type(Type::Line){}
-        ll eval(ll x)const{return m*x + b;}//x*speed + distance_covered_atStart - time_started*speed;
-        bool parallel(const line &l)const{return m == l.m;}
-        ld intersect(const line &l)const{
-            return (parallel(l)?inf:1.0*(l.b-b)/(m-l.m));
-        }
-        bool operator<(const line &l)const{
-            if(l.type == Line)return m < l.m;
-            if(l.type == maxQuery)return x < l.val;
-            if(l.type == minQuery)return x > l.val;
-        }
-    };
-    set<line> hull;
-    typedef set<line>::iterator iter;
-    bool cPrev(iter it){return it != hull.begin();}
-    bool cNext(iter it){return it != hull.end() && next(it) != hull.end();}
-    bool bad(const line &l1, const line &l2, const line &l3){
-        return l1.intersect(l3) <= l1.intersect(l2);
+#include<bits/stdc++.h>
+using namespace std;
+const int N = 1e5+100;
+struct Line{
+    mutable long long k,m,p;
+    bool operator<(const Line &rhs)const{return k < rhs.k;}
+    bool operator<(long long x)const{return p < x;}
+};
+
+struct cht: multiset<Line,less<>>{
+    const long long inf = LLONG_MAX;
+    long long div (long long a, long long b){
+        return a/b - ((a^b) < 0 && a%b);
     }
-    bool bad(iter it){
-        return cPrev(it) && cNext(it) && ((isMax && bad(*prev(it),*it,*next(it))) || (!isMax && bad(*next(it),*it,*prev(it))));
+    bool intersect(iterator x, iterator y){
+        if(y == end()){x->p = inf; return false;}
+        if(x->k == y->k)x->p = x->m > y->m ? inf:-inf;
+        else x->p = div(y->m-x->m,y->k-x->k);
+        return x->p >= y->p;
     }
-    iter update(iter it){
-        if(isMax && !cPrev(it))return it;
-        if(!isMax && !cNext(it))return it;
-        ld x = it->intersect(isMax?*prev(it):*next(it));
-        line tmp(*it);
-        tmp.x = x;
-        it = hull.erase(it);
-        return hull.insert(it,tmp);
+    void add(long long k, long long m){
+        auto z = insert({k,m,0}), y = z++, x = y;
+        while(intersect(y,z))erase(z);
+        if(x != begin() && intersect(--x,y))intersect(x,y=erase(y));
+        while((y=x) != begin() && (--x)->p >= y->p)intersect(x,erase(y));
     }
-    void addLine(ll m, ll b){
-        line l(m,b);
-        iter it = hull.lower_bound(l);
-        if(it != hull.end() && l.parallel(*it)){
-            if(isMax && it->b < b)it=hull.erase(it);
-            if(!isMax && it->b > b)it=hull.erase(it);
-            else return;
-        }
-        it = hull.insert(it,l);
-        if(bad(it))return (void)hull.erase(it);
-        while(cPrev(it) && bad(prev(it)))hull.erase(prev(it));
-        while(cNext(it) && bad(next(it)))hull.erase(next(it));
-        it = update(it);
-        if(cPrev(it))update(prev(it));
-        if(cNext(it))update(next(it));
-    }
-    ll getBest(ll x) const{
-        if(isMax && hull.empty())return -inf;
-        if(!!isMax && hull.empty())return inf;
-        line q;
-        q.val = x;
-        q.type = isMax?line::Type::maxQuery:line::Type::minQuery;
-        iter it = hull.lower_bound(q);
-        if(isMax)it--;
-        return it->eval(x);
-    }
-    void displayLines(){
-        for(auto &a: this->hull)printf("y = %lld x + %lld\n",a.m,a.b);
+    long long query(long long x){
+        assert(!empty());
+        auto l = lower_bound(x);
+        return l->k*x + l->m;
     }
 };
+int n;
+long long ans,arr[N];
+
+int main(){
+    scanf("%d",&n);
+    for(int i = 1; i <= n; ++i)scanf("%lld",arr+i);
+    for(int i = 2; i <= n; ++i)arr[i]+=arr[i-1];
+    cht s;
+    s.add(-2-2*arr[1],1+arr[0]*arr[0]);
+    for(int i = 2; i <= n; ++i){
+        ans = i*i + arr[i]*arr[i] + s.query(i)
+    }
+    return 0;
+}

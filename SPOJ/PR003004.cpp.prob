@@ -1,0 +1,1 @@
+{"group":"local","interactive":false,"local":true,"memoryLimit":1024,"name":"PR003004","srcPath":"/mnt/d/code/Competitive-Programming/SPOJ/PR003004.cpp","tests":[{"id":1591691709916,"input":"3\n0 10\n28 31\n1234 56789","output":"46\n28\n1128600"}],"timeLimit":3000,"url":"/mnt/d/code/Competitive-Programming/SPOJ/PR003004.cpp"}

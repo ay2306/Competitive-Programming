@@ -1,0 +1,1 @@
+{"group":"local","interactive":false,"local":true,"memoryLimit":1024,"name":"hiking","srcPath":"/mnt/d/code/Competitive-Programming/codeforces/practice/hiking.cpp","tests":[{"id":1591697414000,"input":"5 9\n10 10\n20 10\n30 1\n31 5\n40 10","output":"1 2 4 5"}],"timeLimit":3000,"url":"/mnt/d/code/Competitive-Programming/codeforces/practice/hiking.cpp"}

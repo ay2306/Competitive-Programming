@@ -46,16 +46,15 @@ vector<int> kasai(string &s, vector<int> &sa)
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
-    cout.tie(nullptr);
     const int N = 5e5+10;
     string s;
     int n,t=1;
     cin >> t;
     while(t--){
-        cin >> n;
-        cin >> s;
-        n = s.size();
+        cin >> n >> s;
+        // n = s.size();
         s+=s;
+        s+='\0';
         auto sa = suffix_array(s);
         auto lcp = kasai(s,sa);
         int ans = 0,id;

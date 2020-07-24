@@ -1,0 +1,1 @@
+{"group":"local","interactive":false,"local":true,"memoryLimit":1024,"name":"Local: ANUSAR","srcPath":"/mnt/d/code/Competitive-Programming/codeChef/ANUSAR.cpp","tests":[{"id":1592992432543,"input":"1\naaeddf\n4\n1\n2\n3\n4","output":"21\n4\n0\n0"}],"timeLimit":3000,"url":"/mnt/d/code/Competitive-Programming/codeChef/ANUSAR.cpp"}
