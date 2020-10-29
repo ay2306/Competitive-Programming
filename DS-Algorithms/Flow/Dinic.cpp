@@ -42,7 +42,7 @@ struct Dinic{
     }
     long long dfs(int u, long long pushed){
         if(pushed == 0)return 0;
-        if(u == t)return 0;
+        if(u == t)return pushed;
         for(int &i = ptr[u]; i < (int)g[u].size(); ++i){
             int id = g[u][i];
             int v = edge[id].v;

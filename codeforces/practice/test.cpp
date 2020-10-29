@@ -1,47 +1,42 @@
-#include<bits/stdc++.h>
-using namespace std ;
-
-int main() {
-    int n ;
-    cin >> n ;
-    int a[n+1] ;
-    for (int i = 1 ; i <= n ; ++i) {
-        cin >> a[i] ;
+void pre_dfs(int v = 0){
+    st[v] = dfs_time++;
+    ver[ st[v] ] = v;
+    sz[v] = 1, big[v] = -1;
+    for(auto u : adj[v]){
+        a[u] = (1 << s[u] - 'a') ^ a[v];
+        h[u] = h[v] + 1;
+        pre_dfs(u);
+        sz[v] += sz[u];
+        if(big[v] == -1 || sz[u] > sz[ big[v] ])
+            big[v] = u;
     }
-    int m ;
-    cin >> m ;
-    int b[m+1] ;
-    for (int i = 1 ; i <= m ; ++i) {
-        cin >> b[i] ;
+    ft[v] = dfs_time;
+}
+void dfs(int v = 0, bool cl = 0){
+    for(auto u : adj[v])
+	if(u != big[v])
+	    dfs(u, 1), ans[v] = max(ans[v], ans[u]);
+    if(big[v] != -1)
+	dfs(big[v], 0), ans[v] = max(ans[v], ans[ big[v] ]);
+    for(auto u : adj[v])
+	if(u != big[v]){
+	    for(int p = st[u]; p < ft[u]; p++){
+		int x = ver[p];
+		cur = max(cur, h[x] + bag[ a[x] ] - 2 * h[v]);
+		for(int i = 0; i < z; i++)
+		    cur = max(cur, h[x] + bag[ a[x] ^ (1 << i) ] - 2 * h[v]);
+	    }
+	    for(int p = st[u]; p < ft[u]; p++)
+		bag[ a[ ver[p] ] ] = max(bag[ a[ ver[p] ] ], h[ ver[p] ]);
+	}
+    cur = max(cur, bag[ a[v] ] - h[v]);
+    for(int i = 0; i < z; i++)
+	cur = max(cur, bag[ a[v] ^ (1 << i) ] - h[v]);
+    bag[ a[v] ] = max(bag[ a[v] ], h[v]);
+    ans[v] = max(ans[v], cur);
+    if(cl){
+	for(int p = st[v]; p < ft[v]; p++)
+	    bag[ a[ ver[p] ] ] = -inf;
+	cur = 0;
     }
-    int l ;
-    cin >> l ;
-    int c[l+1] ;
-    for (int i = 1 ; i <= l ; ++i) {
-        cin >> c[i] ;
-    }
-    int dp[n+1][m+1][l+1] ;
-	memset(dp,0,sizeof(dp));
-    for (int i = 0 ; i <= n ; ++i) {
-        dp[i][0][0] = 0 ;
-    }
-    for (int i = 0 ; i <= m ; ++i) {
-        dp[0][i][0] = 0 ;
-    }
-    for (int i = 0 ; i <= l ; ++i) {
-        dp[0][0][i] = 0 ;
-    }
-    for (int i = 1 ; i <= n ; ++i) {
-        for (int j = 1 ; j <= m ; ++j) {
-            for (int k = 1 ; k <= l ; ++k) {
-                if (a[i] == b[j] && a[i] == c[k]) {
-                    dp[i][j][k] = 1 + dp[i-1][j-1][k-1] ;
-                } else {
-                    dp[i][j][k] = max ({dp[i-1][j][k] , dp[i][j-1][k] , dp[i][j][k-1]}) ;
-                }
-            }
-        }
-    }
-    cout << dp[n][m][l] ;
-    return 0 ;
 }
