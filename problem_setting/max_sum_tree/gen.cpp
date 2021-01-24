@@ -7,13 +7,6 @@ int getRandom(int l, int r){
     uniform_int_distribution<int> uid(l,r);
     return uid(rng);
 }
-string getString(int len){
-    string ans = "";
-    while(len--){
-        ans += char(getRandom('a','z'));
-    }
-    return ans;
-}
 int parseInt(char *a){
     int s = 0;
     for(int i = 0; a[i] != '\0'; ++i)s = s*10 + a[i] - '0';
@@ -26,11 +19,16 @@ int32_t main(int argc, char **argv){
     int n_low = parseInt(argv[1]);
     int n_high = parseInt(argv[2]);
     int n = getRandom(n_low,n_high);
-    int m = getRandom(1,min(200000LL,n*(n-1)/2));
-    cout << n << " " << m << "\n";
-    int chigh = 1e5;
-    if(n <= 6)chigh = 15;
-    for(int i = 0; i < n; ++i)cout << getRandom(1,chigh) << " ";
+    cout << n << "\n";
+    int chigh = 1000000;
+    int clow = 0;
+    if(n <= 10){
+        chigh = getRandom(1,15);
+    }
+    if(getRandom(1,2) == 1){
+        clow = chigh;
+    }
+    for(int i = 0; i < n; ++i)cout << getRandom(clow,chigh) << " ";
     cout << "\n";
     vector<int> p(n+1);
     iota(p.begin(),p.end(),0);
@@ -41,14 +39,14 @@ int32_t main(int argc, char **argv){
     auto u = [&](int a, int b){
         p[fp(a)] = fp(b);
     };
-    while(m){
-        int x,y,z;
-        x = getRandom(1,n-1);
-        y = getRandom(x+1,n);
-        if(fp(x) != fp(y)){
-            cout << x << " " << y << " " << getRandom(1,chigh) << "\n";
-            m--;
-        }
+    int comp = n;
+    while(comp > 1){
+        int x = getRandom(1,n-1);
+        int y = getRandom(x+1,n);
+        if(fp(x) == fp(y))continue;
+        comp--;
+        u(x,y);
+        cout << x << " " << y << "\n";
     }
     return 0;
 }
